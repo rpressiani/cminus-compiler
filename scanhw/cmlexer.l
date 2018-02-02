@@ -76,6 +76,29 @@ PLUS 		"+"
 MINUS 		"-"
 MULT 		"*"
 DIV 		"/"
+BNOT 		"~"
+TCOND1 		"?"
+TCOND2 		":"
+INC 		"++"
+DEC 		"--"
+NOT 		"!"
+BAND 		"&"
+BOR 		"|"
+BXOR 		"^"
+BLS 		"<<"
+BRS 		">>"
+ADDASS 		"+="
+SUBASS 		"-="
+MULASS 		"*="
+DIVASS 		"/="
+BXORASS 	"^="
+MODASS 		"%="
+BLSASS 		"<<="
+BRSASS 		">>="
+BANDASS		"&="
+BORASS 		"|="
+UBRS 		">>>"
+UBRSASS 	">>>="
 
 
 %%
@@ -131,6 +154,29 @@ DIV 		"/"
 {MINUS}		{ return TOK_MINUS; }
 {MULT}		{ return TOK_MULT; }
 {DIV}		{ return TOK_DIV; }
+{BNOT}		{ return TOK_ERROR; }
+{TCOND1}	{ return TOK_ERROR; }
+{TCOND2}	{ return TOK_ERROR; }
+{INC}		{ return TOK_ERROR; }
+{DEC}		{ return TOK_ERROR; }
+{NOT}		{ return TOK_ERROR; }
+{BAND}		{ return TOK_ERROR; }
+{BOR}		{ return TOK_ERROR; }
+{BXOR}		{ return TOK_ERROR; }
+{BLS}		{ return TOK_ERROR; }
+{BRS}		{ return TOK_ERROR; }
+{ADDASS}	{ return TOK_ERROR; }
+{SUBASS}	{ return TOK_ERROR; }
+{MULASS}	{ return TOK_ERROR; }
+{DIVASS}	{ return TOK_ERROR; }
+{BXORASS}	{ return TOK_ERROR; }
+{MODASS}	{ return TOK_ERROR; }
+{BLSASS}	{ return TOK_ERROR; }
+{BRSASS}	{ return TOK_ERROR; }
+{BANDASS}	{ return TOK_ERROR; }
+{BORASS}	{ return TOK_ERROR; }
+{UBRS}		{ return TOK_ERROR; }
+{UBRSASS}	{ return TOK_ERROR; }
 
 %%
 /**********************/
