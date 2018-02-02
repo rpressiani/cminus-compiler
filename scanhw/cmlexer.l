@@ -40,6 +40,11 @@ SHORT 		"short"
 REGISTER 	"register"
 SWITCH 		"switch"
 
+/* Identifier */
+ID 			[A-Z|a-z|_|$][A-Z|a-z|_|$|0-9]*
+
+/* Other */
+
 NUMBER		[0-9]+
 SEMI		";"
 
@@ -71,6 +76,8 @@ SEMI		";"
 {SHORT}		{ return TOK_ERROR; }
 {REGISTER}	{ return TOK_ERROR; }
 {SWITCH}	{ return TOK_ERROR; }
+
+{ID}		{ return TOK_ID; }
 
 {NUMBER} { return TOK_NUM; }
 {SEMI} { return TOK_SEMI; }
@@ -107,6 +114,11 @@ void printToken(int token, char *str)
 				break;
 			case TOK_WHILE:
 				fprintf(yyout,"%d:TOK_WHILE: %s\n",yylineno,str);
+				break;
+
+			// Identifier
+			case TOK_ID:
+				fprintf(yyout,"%d:TOK_ID: %s\n",yylineno,str);
 				break;
 
 			// Other
