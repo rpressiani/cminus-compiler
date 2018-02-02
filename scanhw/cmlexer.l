@@ -15,6 +15,9 @@ int printoutScan = 1;
 /* start your regular definitions  here */
 /**********************/
 
+/* start your token specifications here */
+/* Token names must come from cmparser.tab.h */
+
 %option yylineno
 
 /* Keywords */
@@ -60,8 +63,20 @@ RSQ 		"]"
 SEMI 		";"
 COMMA 		","
 
-/* start your token specifications here */
-/* Token names must come from cmparser.tab.h */
+/* Operators */
+
+ASSIGN 		"="
+GT 			">"
+LT 			"<"
+EQ 			"=="
+GE 			">="
+LE 			"<="
+NE 			"!="
+PLUS 		"+"
+MINUS 		"-"
+MULT 		"*"
+DIV 		"/"
+
 
 %%
 
@@ -104,6 +119,18 @@ COMMA 		","
 {RSQ}		{ return TOK_RSQ; }
 {SEMI}		{ return TOK_SEMI; }
 {COMMA}		{ return TOK_COMMA; }
+
+{ASSIGN}	{ return TOK_ASSIGN; }
+{GT}		{ return TOK_GT; }
+{LT}		{ return TOK_LT; }
+{EQ}		{ return TOK_EQ; }
+{GE}		{ return TOK_GE; }
+{LE}		{ return TOK_LE; }
+{NE}		{ return TOK_NE; }
+{PLUS}		{ return TOK_PLUS; }
+{MINUS}		{ return TOK_MINUS; }
+{MULT}		{ return TOK_MULT; }
+{DIV}		{ return TOK_DIV; }
 
 %%
 /**********************/
@@ -177,6 +204,41 @@ void printToken(int token, char *str)
 				fprintf(yyout,"%d:TOK_COMMA: %s\n",yylineno,str);
 				break;
 
+			// Operators
+			case TOK_ASSIGN:
+				fprintf(yyout,"%d:TOK_ASSIGN: %s\n",yylineno,str);
+				break;
+			case TOK_GT:
+				fprintf(yyout,"%d:TOK_GT: %s\n",yylineno,str);
+				break;
+			case TOK_LT:
+				fprintf(yyout,"%d:TOK_LT: %s\n",yylineno,str);
+				break;
+			case TOK_EQ:
+				fprintf(yyout,"%d:TOK_EQ: %s\n",yylineno,str);
+				break;
+			case TOK_GE:
+				fprintf(yyout,"%d:TOK_GE: %s\n",yylineno,str);
+				break;
+			case TOK_LE:
+				fprintf(yyout,"%d:TOK_LE: %s\n",yylineno,str);
+				break;
+			case TOK_NE:
+				fprintf(yyout,"%d:TOK_NE: %s\n",yylineno,str);
+				break;
+			case TOK_PLUS:
+				fprintf(yyout,"%d:TOK_PLUS: %s\n",yylineno,str);
+				break;
+			case TOK_MINUS:
+				fprintf(yyout,"%d:TOK_MINUS: %s\n",yylineno,str);
+				break;
+			case TOK_MULT:
+				fprintf(yyout,"%d:TOK_MULT: %s\n",yylineno,str);
+				break;
+			case TOK_DIV:
+				fprintf(yyout,"%d:TOK_DIV: %s\n",yylineno,str);
+				break;
+
 			// Other
 			case TOK_ERROR:
 				fprintf(yyout,"%d:TOK_ERROR: %s\n",yylineno,str);
@@ -186,27 +248,30 @@ void printToken(int token, char *str)
 
 
 int gettok(void){
+
 	int currentToken;
-	
 	currentToken=yylex();
+
 	if (currentToken == 0) { // means EOF}
-			return 0;
+		return 0;
 	}
+
 	strncpy(tokenString, yytext, TOKENMAX);
 	if (printoutScan) {
 		printToken(currentToken,tokenString);
 	}
+
 	return currentToken;
 }
 
 int main(int argc, char **argv){
 
-	
-   if ( argc > 1 )
-	   yyin = fopen( argv[1], "r" );
-   else
-	yyin = stdin;
+	if ( argc > 1 )
+		yyin = fopen( argv[1], "r" );
+	else
+		yyin = stdin;
 
-   while (gettok() !=0) ; //gettok returns 0 on EOF
+	while (gettok() != 0) ; //gettok returns 0 on EOF
+
 	return 1;
 } 
