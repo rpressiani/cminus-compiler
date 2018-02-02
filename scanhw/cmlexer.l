@@ -20,28 +20,32 @@ int printoutScan = 1;
 /* Keywords */
 ELSE 		"else"
 IF 			"if"
-INT 		"int"
 RETURN 		"return"
-VOID 		"void"
 WHILE 		"while"
 AUTO 		"auto"
 BREAK 		"break"
 CASE 		"case"
-CHAR 		"char"
 CONST 		"const"
 CONTINUE 	"continue"
 DEFAULT 	"default"
 DO 			"do"
-DOUBLE 		"double"
 FOR 		"for"
 GOTO 		"goto"
-LONG 		"long"
-SHORT 		"short"
 REGISTER 	"register"
 SWITCH 		"switch"
 
 /* Identifier */
 ID 			[A-Z|a-z|_|$][A-Z|a-z|_|$|0-9]*
+
+/* Primitive Types */
+INT 		"int"
+VOID 		"void"
+BYTE 		"byte"
+DOUBLE 		"double"
+LONG 		"long"
+SHORT 		"short"
+FLOAT 		"float"
+CHAR 		"char"
 
 /* Other */
 
@@ -53,31 +57,34 @@ SEMI		";"
 
 %%
 
-\n {}
+\n 			{}
 
 {ELSE}		{ return TOK_ELSE; }
 {IF}		{ return TOK_IF; }
-{INT}		{ return TOK_INT; }
 {RETURN}	{ return TOK_RETURN; }
-{VOID}		{ return TOK_VOID; }
 {WHILE}		{ return TOK_WHILE; }
 {AUTO}		{ return TOK_ERROR; }
 {BREAK}		{ return TOK_ERROR; }
 {CASE}		{ return TOK_ERROR; }
-{CHAR}		{ return TOK_ERROR; }
 {CONST}		{ return TOK_ERROR; }
 {CONTINUE}	{ return TOK_ERROR; }
 {DEFAULT}	{ return TOK_ERROR; }
 {DO}		{ return TOK_ERROR; }
-{DOUBLE}	{ return TOK_ERROR; }
 {FOR}		{ return TOK_ERROR; }
 {GOTO}		{ return TOK_ERROR; }
-{LONG}		{ return TOK_ERROR; }
-{SHORT}		{ return TOK_ERROR; }
 {REGISTER}	{ return TOK_ERROR; }
 {SWITCH}	{ return TOK_ERROR; }
 
 {ID}		{ return TOK_ID; }
+
+{INT}		{ return TOK_INT; }
+{VOID}		{ return TOK_VOID; }
+{BYTE}		{ return TOK_ERROR; }
+{DOUBLE}	{ return TOK_ERROR; }
+{LONG}		{ return TOK_ERROR; }
+{SHORT}		{ return TOK_ERROR; }
+{FLOAT}		{ return TOK_ERROR; }
+{CHAR}		{ return TOK_ERROR; }
 
 {NUMBER} { return TOK_NUM; }
 {SEMI} { return TOK_SEMI; }
