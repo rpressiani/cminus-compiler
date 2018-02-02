@@ -50,8 +50,15 @@ CHAR 		"char"
 /* Integer Literals*/
 NUMBER		[0-9]+
 
-/* Other */
-SEMI		";"
+/* Punctuation */
+LPAREN 		"("
+RPAREN 		")"
+LBRACE 		"{"
+RBRACE 		"}"
+LSQ 		"["
+RSQ 		"]"
+SEMI 		";"
+COMMA 		","
 
 /* start your token specifications here */
 /* Token names must come from cmparser.tab.h */
@@ -87,9 +94,16 @@ SEMI		";"
 
 {ID}		{ return TOK_ID; }
 
-{NUMBER} { return TOK_NUM; }
-{SEMI} { return TOK_SEMI; }
+{NUMBER}	{ return TOK_NUM; }
 
+{LPAREN}	{ return TOK_LPAREN; }
+{RPAREN}	{ return TOK_RPAREN; }
+{LBRACE}	{ return TOK_LBRACE; }
+{RBRACE}	{ return TOK_RBRACE; }
+{LSQ}		{ return TOK_LSQ; }
+{RSQ}		{ return TOK_RSQ; }
+{SEMI}		{ return TOK_SEMI; }
+{COMMA}		{ return TOK_COMMA; }
 
 %%
 /**********************/
@@ -137,12 +151,35 @@ void printToken(int token, char *str)
 				fprintf(yyout,"%d:TOK_NUM: %s\n",yylineno,str);
 				break;
 
-			// Other
-			case TOK_ERROR:
-				fprintf(yyout,"%d:TOK_ERROR: %s\n",yylineno,str);
+			// Punctuation
+			case TOK_LPAREN:
+				fprintf(yyout,"%d:TOK_LPAREN: %s\n",yylineno,str);
+				break;
+			case TOK_RPAREN:
+				fprintf(yyout,"%d:TOK_RPAREN: %s\n",yylineno,str);
+				break;
+			case TOK_LBRACE:
+				fprintf(yyout,"%d:TOK_LBRACE: %s\n",yylineno,str);
+				break;
+			case TOK_RBRACE:
+				fprintf(yyout,"%d:TOK_RBRACE: %s\n",yylineno,str);
+				break;
+			case TOK_LSQ:
+				fprintf(yyout,"%d:TOK_LSQ: %s\n",yylineno,str);
+				break;
+			case TOK_RSQ:
+				fprintf(yyout,"%d:TOK_RSQ: %s\n",yylineno,str);
 				break;
 			case TOK_SEMI:
 				fprintf(yyout,"%d:TOK_SEMI: %s\n",yylineno,str);
+				break;
+			case TOK_COMMA:
+				fprintf(yyout,"%d:TOK_COMMA: %s\n",yylineno,str);
+				break;
+
+			// Other
+			case TOK_ERROR:
+				fprintf(yyout,"%d:TOK_ERROR: %s\n",yylineno,str);
 				break;
 		}
 }
