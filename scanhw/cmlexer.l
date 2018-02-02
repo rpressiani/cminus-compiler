@@ -24,7 +24,7 @@ NUMBER		[0-9]+
 
 %%
 
-\n { return yylineno++; }
+\n {}
 
 {NUMBER} { return TOK_NUM; }
 
