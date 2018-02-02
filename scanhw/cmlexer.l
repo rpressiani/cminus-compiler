@@ -76,8 +76,6 @@ SEMI		";"
 {REGISTER}	{ return TOK_ERROR; }
 {SWITCH}	{ return TOK_ERROR; }
 
-{ID}		{ return TOK_ID; }
-
 {INT}		{ return TOK_INT; }
 {VOID}		{ return TOK_VOID; }
 {BYTE}		{ return TOK_ERROR; }
@@ -86,6 +84,8 @@ SEMI		";"
 {SHORT}		{ return TOK_ERROR; }
 {FLOAT}		{ return TOK_ERROR; }
 {CHAR}		{ return TOK_ERROR; }
+
+{ID}		{ return TOK_ID; }
 
 {NUMBER} { return TOK_NUM; }
 {SEMI} { return TOK_SEMI; }
