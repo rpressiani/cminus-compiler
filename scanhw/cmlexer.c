@@ -385,18 +385,18 @@ struct yy_trans_info
 	};
 static yyconst flex_int16_t yy_accept[106] =
     {   0,
-        0,    0,   29,   28,    1,   17,   26,   27,   17,   17,
-       17,   17,   17,   17,   17,   17,   17,   17,   17,   17,
-       17,   17,   26,   17,   17,   17,   17,   17,   17,   17,
-       12,   17,   17,   17,   17,    3,   17,   17,   17,   17,
-       17,   17,   17,   17,   17,   17,   17,   17,   17,   17,
-       17,   17,   17,   13,   17,   17,   17,   17,   17,   17,
-       17,   17,   17,    6,   17,   17,    8,   17,   17,   17,
-       17,   17,    2,   17,   14,   17,   17,   17,   17,   17,
-       17,   17,    7,    9,   17,   17,   17,   17,   17,   17,
-       17,   17,    5,   17,   17,   17,   17,    4,   16,   17,
+        0,    0,   29,   28,    1,   25,   26,   27,   25,   25,
+       25,   25,   25,   25,   25,   25,   25,   25,   25,   25,
+       25,   25,   26,   25,   25,   25,   25,   25,   25,   25,
+       12,   25,   25,   25,   25,    3,   25,   25,   25,   25,
+       25,   25,   25,   25,   25,   25,   25,   25,   25,   25,
+       25,   25,   25,   13,   25,   17,   25,   25,   25,   25,
+       25,   25,   25,    6,   25,   19,    8,   24,   25,   25,
+       25,   25,    2,   25,   14,   21,   25,   25,   25,   25,
+       18,   25,    7,    9,   25,   25,   25,   23,   25,   25,
+       22,   25,    5,   25,   25,   20,   25,    4,   16,   25,
 
-       11,   17,   10,   15,    0
+       11,   25,   10,   15,    0
     } ;
 
 static yyconst flex_int32_t yy_ec[256] =
@@ -414,7 +414,7 @@ static yyconst flex_int32_t yy_ec[256] =
 
        10,   11,   12,   13,   14,    3,   15,   16,    3,   17,
        18,    3,    3,   19,   20,   21,   22,   23,   24,    3,
-       25,    3,    1,    3,    1,    1,    1,    1,    1,    1,
+       25,    3,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -542,12 +542,13 @@ int printoutScan = 1;
 /* start your regular definitions  here */
 /**********************/
 /* Keywords */
-/* Identifier */
 /* Primitive Types */
+/* Identifier */
+/* Integer Literals*/
 /* Other */
 /* start your token specifications here */
 /* Token names must come from cmparser.tab.h */
-#line 551 "cmlexer.c"
+#line 552 "cmlexer.c"
 
 #define INITIAL 0
 
@@ -729,10 +730,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 58 "cmlexer.l"
+#line 59 "cmlexer.l"
 
 
-#line 736 "cmlexer.c"
+#line 737 "cmlexer.c"
 
 	if ( !(yy_init) )
 		{
@@ -828,98 +829,98 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 60 "cmlexer.l"
+#line 61 "cmlexer.l"
 {}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 62 "cmlexer.l"
+#line 63 "cmlexer.l"
 { return TOK_ELSE; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 63 "cmlexer.l"
+#line 64 "cmlexer.l"
 { return TOK_IF; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 64 "cmlexer.l"
+#line 65 "cmlexer.l"
 { return TOK_RETURN; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 65 "cmlexer.l"
+#line 66 "cmlexer.l"
 { return TOK_WHILE; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 66 "cmlexer.l"
+#line 67 "cmlexer.l"
 { return TOK_ERROR; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 67 "cmlexer.l"
+#line 68 "cmlexer.l"
 { return TOK_ERROR; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 68 "cmlexer.l"
+#line 69 "cmlexer.l"
 { return TOK_ERROR; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 69 "cmlexer.l"
+#line 70 "cmlexer.l"
 { return TOK_ERROR; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 70 "cmlexer.l"
+#line 71 "cmlexer.l"
 { return TOK_ERROR; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 71 "cmlexer.l"
+#line 72 "cmlexer.l"
 { return TOK_ERROR; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 72 "cmlexer.l"
+#line 73 "cmlexer.l"
 { return TOK_ERROR; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 73 "cmlexer.l"
+#line 74 "cmlexer.l"
 { return TOK_ERROR; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 74 "cmlexer.l"
+#line 75 "cmlexer.l"
 { return TOK_ERROR; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 75 "cmlexer.l"
+#line 76 "cmlexer.l"
 { return TOK_ERROR; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 76 "cmlexer.l"
+#line 77 "cmlexer.l"
 { return TOK_ERROR; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 78 "cmlexer.l"
-{ return TOK_ID; }
+#line 79 "cmlexer.l"
+{ return TOK_INT; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
 #line 80 "cmlexer.l"
-{ return TOK_INT; }
+{ return TOK_VOID; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
 #line 81 "cmlexer.l"
-{ return TOK_VOID; }
+{ return TOK_ERROR; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
@@ -948,25 +949,25 @@ YY_RULE_SETUP
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 87 "cmlexer.l"
-{ return TOK_ERROR; }
+#line 88 "cmlexer.l"
+{ return TOK_ID; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 89 "cmlexer.l"
+#line 90 "cmlexer.l"
 { return TOK_NUM; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 90 "cmlexer.l"
+#line 91 "cmlexer.l"
 { return TOK_SEMI; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 93 "cmlexer.l"
+#line 94 "cmlexer.l"
 ECHO;
 	YY_BREAK
-#line 970 "cmlexer.c"
+#line 971 "cmlexer.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1975,7 +1976,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 93 "cmlexer.l"
+#line 94 "cmlexer.l"
 
 
 /**********************/
@@ -2018,10 +2019,12 @@ void printToken(int token, char *str)
 				fprintf(yyout,"%d:TOK_VOID: %s\n",yylineno,str);
 				break;
 
-			// Other
+			// Integer Literals
 			case TOK_NUM:
 				fprintf(yyout,"%d:TOK_NUM: %s\n",yylineno,str);
 				break;
+
+			// Other
 			case TOK_ERROR:
 				fprintf(yyout,"%d:TOK_ERROR: %s\n",yylineno,str);
 				break;

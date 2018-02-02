@@ -47,9 +47,10 @@ SHORT 		"short"
 FLOAT 		"float"
 CHAR 		"char"
 
-/* Other */
-
+/* Integer Literals*/
 NUMBER		[0-9]+
+
+/* Other */
 SEMI		";"
 
 /* start your token specifications here */
@@ -131,10 +132,12 @@ void printToken(int token, char *str)
 				fprintf(yyout,"%d:TOK_VOID: %s\n",yylineno,str);
 				break;
 
-			// Other
+			// Integer Literals
 			case TOK_NUM:
 				fprintf(yyout,"%d:TOK_NUM: %s\n",yylineno,str);
 				break;
+
+			// Other
 			case TOK_ERROR:
 				fprintf(yyout,"%d:TOK_ERROR: %s\n",yylineno,str);
 				break;
