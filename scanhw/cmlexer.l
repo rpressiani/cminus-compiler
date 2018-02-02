@@ -110,15 +110,10 @@ void printToken(int token, char *str)
 			case TOK_IF:
 				fprintf(yyout,"%d:TOK_IF: %s\n",yylineno,str);
 				break;
-			case TOK_INT:
-				fprintf(yyout,"%d:TOK_INT: %s\n",yylineno,str);
-				break;
 			case TOK_RETURN:
 				fprintf(yyout,"%d:TOK_RETURN: %s\n",yylineno,str);
 				break;
-			case TOK_VOID:
-				fprintf(yyout,"%d:TOK_VOID: %s\n",yylineno,str);
-				break;
+			
 			case TOK_WHILE:
 				fprintf(yyout,"%d:TOK_WHILE: %s\n",yylineno,str);
 				break;
@@ -126,6 +121,14 @@ void printToken(int token, char *str)
 			// Identifier
 			case TOK_ID:
 				fprintf(yyout,"%d:TOK_ID: %s\n",yylineno,str);
+				break;
+
+			// Primitive Types
+			case TOK_INT:
+				fprintf(yyout,"%d:TOK_INT: %s\n",yylineno,str);
+				break;
+			case TOK_VOID:
+				fprintf(yyout,"%d:TOK_VOID: %s\n",yylineno,str);
 				break;
 
 			// Other
