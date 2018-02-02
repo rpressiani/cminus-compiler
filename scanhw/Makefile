@@ -14,7 +14,7 @@ LIBRARIES=-ll
 
 CFLAGS=-g
 
-PROGRAM=cmlexer
+PROGRAM=bin/cmlexer
 
 OBJECTS=cmlexer.o 
 
