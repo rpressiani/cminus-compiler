@@ -15,12 +15,16 @@ int printoutScan = 1;
 /* start your regular definitions  here */
 /**********************/
 
+%option yylineno
+
 NUMBER		[0-9]+
 
 /* start your token specifications here */
 /* Token names must come from cmparser.tab.h */
 
 %%
+
+\n { return yylineno++; }
 
 {NUMBER} { return TOK_NUM; }
 
