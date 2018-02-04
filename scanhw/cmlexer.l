@@ -83,7 +83,7 @@ INC 		"++"
 DEC 		"--"
 NOT 		"!"
 BAND 		"&"
-BOR 		"|"
+BOR 		"\|"
 BXOR 		"^"
 BLS 		"<<"
 BRS 		">>"
@@ -100,6 +100,10 @@ BORASS 		"|="
 UBRS 		">>>"
 UBRSASS 	">>>="
 
+/* COMMENTS */
+
+SINGLELINECOMMENT	\/\/.*
+MULTILINECOMMENT	\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*\/
 
 %%
 
@@ -129,8 +133,6 @@ UBRSASS 	">>>="
 {SHORT}		{ return TOK_ERROR; }
 {FLOAT}		{ return TOK_ERROR; }
 {CHAR}		{ return TOK_ERROR; }
-
-{ID}		{ return TOK_ID; }
 
 {NUMBER}	{ return TOK_NUM; }
 
@@ -177,6 +179,8 @@ UBRSASS 	">>>="
 {BORASS}	{ return TOK_ERROR; }
 {UBRS}		{ return TOK_ERROR; }
 {UBRSASS}	{ return TOK_ERROR; }
+
+{ID}		{ return TOK_ID; }
 
 %%
 /**********************/
