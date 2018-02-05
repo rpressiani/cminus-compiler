@@ -182,6 +182,9 @@ MULTILINECOMMENT	\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*\/
 
 {ID}		{ return TOK_ID; }
 
+{MULTILINECOMMENT}		{}
+{SINGLELINECOMMENT}		{}
+
 %%
 /**********************/
 /* C support functions */
