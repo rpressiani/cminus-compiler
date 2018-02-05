@@ -107,6 +107,8 @@ MULTILINECOMMENT	\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*\/
 
 %%
 
+[ \t]+		{}
+
 \n 			{}
 
 {ELSE}		{ return TOK_ELSE; }
