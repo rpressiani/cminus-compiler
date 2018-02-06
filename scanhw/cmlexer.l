@@ -101,7 +101,7 @@ BORASS 		"|="
 UBRS 		">>>"
 UBRSASS 	">>>="
 
-/* COMMENTS */
+/* Comments */
 
 SINGLELINECOMMENT	\/\/.*
 MULTILINECOMMENT	\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*\/
