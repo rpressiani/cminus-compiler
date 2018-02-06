@@ -52,7 +52,7 @@ FLOAT 		"float"
 CHAR 		"char"
 
 /* Integer Literals*/
-NUMBER		[0-9]+
+NUMBER		(0|[1-9][0-9]*)
 
 /* Punctuation */
 LPAREN 		"("
