@@ -6,6 +6,7 @@
 %{
 #include "globals.h"
 #include "cmparser.tab.h"
+#include "string.h"
 char tokenString[TOKENMAX];
 int printoutScan = 1;
 
