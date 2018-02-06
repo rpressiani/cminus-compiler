@@ -115,9 +115,26 @@ MULTILINECOMMENT	\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*\/
 {IF}		{ return TOK_IF; }
 {RETURN}	{ return TOK_RETURN; }
 {WHILE}		{ return TOK_WHILE; }
+{AUTO}		{ return TOK_ERROR; }
+{BREAK}		{ return TOK_ERROR; }
+{CASE}		{ return TOK_ERROR; }
+{CONST}		{ return TOK_ERROR; }
+{CONTINUE}	{ return TOK_ERROR; }
+{DEFAULT}	{ return TOK_ERROR; }
+{DO}		{ return TOK_ERROR; }
+{FOR}		{ return TOK_ERROR; }
+{GOTO}		{ return TOK_ERROR; }
+{REGISTER}	{ return TOK_ERROR; }
+{SWITCH}	{ return TOK_ERROR; }
 
 {INT}		{ return TOK_INT; }
 {VOID}		{ return TOK_VOID; }
+{BYTE}		{ return TOK_ERROR; }
+{DOUBLE}	{ return TOK_ERROR; }
+{LONG}		{ return TOK_ERROR; }
+{SHORT}		{ return TOK_ERROR; }
+{FLOAT}		{ return TOK_ERROR; }
+{CHAR}		{ return TOK_ERROR; }
 
 {NUMBER}	{ return TOK_NUM; }
 
@@ -141,6 +158,29 @@ MULTILINECOMMENT	\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*\/
 {MINUS}		{ return TOK_MINUS; }
 {MULT}		{ return TOK_MULT; }
 {DIV}		{ return TOK_DIV; }
+{BNOT}		{ return TOK_ERROR; }
+{TCOND1}	{ return TOK_ERROR; }
+{TCOND2}	{ return TOK_ERROR; }
+{INC}		{ return TOK_ERROR; }
+{DEC}		{ return TOK_ERROR; }
+{NOT}		{ return TOK_ERROR; }
+{BAND}		{ return TOK_ERROR; }
+{BOR}		{ return TOK_ERROR; }
+{BXOR}		{ return TOK_ERROR; }
+{BLS}		{ return TOK_ERROR; }
+{BRS}		{ return TOK_ERROR; }
+{ADDASS}	{ return TOK_ERROR; }
+{SUBASS}	{ return TOK_ERROR; }
+{MULASS}	{ return TOK_ERROR; }
+{DIVASS}	{ return TOK_ERROR; }
+{BXORASS}	{ return TOK_ERROR; }
+{MODASS}	{ return TOK_ERROR; }
+{BLSASS}	{ return TOK_ERROR; }
+{BRSASS}	{ return TOK_ERROR; }
+{BANDASS}	{ return TOK_ERROR; }
+{BORASS}	{ return TOK_ERROR; }
+{UBRS}		{ return TOK_ERROR; }
+{UBRSASS}	{ return TOK_ERROR; }
 
 {ID}		{ return TOK_ID; }
 
