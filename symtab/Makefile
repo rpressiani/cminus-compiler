@@ -12,14 +12,15 @@ LIBRARIES=
 CFLAGS=-g -Wall
 YFLAGS=-d
 
-PROGRAM=symboltable
+PROGRAM=bin/symboltable
 
 OBJECTS=main.o symbolTable.o
 
-SOURCES=main.c symbolTable.c
+SOURCES=src/main.c src/symbolTable.c
 
 
 $(PROGRAM): $(OBJECTS)
+	mkdir -p bin
 	$(CC) $(CFLAGS) -o $(PROGRAM) $(OBJECTS) $(LIBRARIES)
 
 clean:
