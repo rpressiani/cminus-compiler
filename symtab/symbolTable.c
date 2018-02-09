@@ -23,6 +23,10 @@ int initSymbolTable() {
 
     stackEntry -> symbolTablePtr = malloc(sizeof(SymbolTable));
 
+    for (int i = 0; i < MAXHASHSIZE; i++) {
+        stackEntry->symbolTablePtr->hashTable[i] = NULL;
+    }
+
     stackEntry -> prevScope = NULL;
 
     symbolStackTop = stackEntry;
@@ -33,15 +37,16 @@ int initSymbolTable() {
 
 
 // Look up a given entry 
-ElementPtr		symLookup(char *name)
-{
-}
+// ElementPtr symLookup(char *name) {
+
+// }
 
 
 // Insert an element with a specified type in a particular line number
 // initialize the scope depth of the entry from the global var scopeDepth
 ElementPtr symInsert(char *name, struct type *type, int line) {
     HashTableEntry newEntry = malloc(sizeof(Element));
+
     newEntry->key = hash(name, MAXHASHSIZE);
     newEntry->id = name;
     newEntry->linenumber = line;
@@ -50,25 +55,33 @@ ElementPtr symInsert(char *name, struct type *type, int line) {
     newEntry->ast = NULL;
     newEntry->next = NULL;
 
-    symbolStackTop->symbolTablePtr->hashTable[newEntry->key] = newEntry;
+    if (!symbolStackTop->symbolTablePtr->hashTable[newEntry->key]) {
+        symbolStackTop->symbolTablePtr->hashTable[newEntry->key] = newEntry;
+    } else {
+        HashTableEntry last = symbolStackTop->symbolTablePtr->hashTable[newEntry->key];
+        while(last->next) {
+            last = last->next;
+        }
+        last->next = newEntry;
+    }
 
     return newEntry;
 }
 
 
-//push a new entry to the symbol stack
+// Push a new entry to the symbol stack
 // This should modify the variable top and change the scope depth
 // return 1 on success, 0 on failure (such as a failed malloc)
-int			enterScope()
-{
-}
+// int enterScope() {
+
+// }
 
 
-//pop an entry off the symbol stack
+// Pop an entry off the symbol stack
 // This should modify top and change scope depth
-void			leaveScope()
-{
-}
+// void leaveScope() {
+
+// }
 
 
 
@@ -89,11 +102,9 @@ void printSymbolTable() {
 
     for (int i = 0; i < MAXHASHSIZE; i++) {
         HashTableEntry element = p->hashTable[i];
-        if (element) {
-            while (TRUE) {
-                printElement(p->hashTable[i]);
-                if (!element->next) break;
-            }
+        while (element) {
+            printElement(element);
+            element = element->next;
         }
     }
 }
