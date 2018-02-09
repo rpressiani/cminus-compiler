@@ -1,5 +1,7 @@
 
-
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include "symbolTable.h"
 
 // Top should point to the top of the scope stack,
@@ -85,4 +87,11 @@ void printSymbolTable()
 
 
 
+int hash(char* str, int maxHashSize) {
+    int sum = 0;
+    for (int i = 0; i < strlen(str); ++i) {
+        sum += str[i];
+    }
 
+    return sum % maxHashSize;
+}
