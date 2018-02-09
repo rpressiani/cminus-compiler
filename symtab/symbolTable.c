@@ -69,22 +69,21 @@ void printElement(ElementPtr symelement) {
     else printf("Wrong call! symbol table entry NULL");
 }
 
-//should traverse through the entire symbol table and print it
+// Should traverse through the entire symbol table and print it
 // must use the printElement function given above
-void printSymbolTable()
-{
+void printSymbolTable() {
+    // TODO Implement for multiple symbolTables
+    HashTableEntry* hashTable = symbolStackTop->symbolTablePtr->hashTable;
+
+    for (int i = 0; i < MAXHASHSIZE; i++) {
+        ElementPtr element = hashTable[i];
+        while (element) {
+            printElement(element);
+            element = element -> next;
+        }
+    }
+
 }
-
-
-
-
-
-            
-
-
-    
-
-
 
 
 int hash(char* str, int maxHashSize) {
