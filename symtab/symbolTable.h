@@ -43,7 +43,7 @@ typedef ElementPtr HashTableEntry;
 
 struct symbolTable {
     HashTableEntry  hashTable[MAXHASHSIZE];     /* hash table  */
-};
+} SymbolTable;
 
 typedef struct symbolTable *SymbolTablePtr;
 
