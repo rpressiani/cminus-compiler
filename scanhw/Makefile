@@ -16,19 +16,19 @@ CFLAGS=-g
 
 PROGRAM=bin/cmlexer
 
-OBJECTS=cmlexer.o 
+OBJECTS=src/cmlexer.o 
 
-SOURCES=cmlexer.l 
+SOURCES=src/cmlexer.l 
 
 
 $(PROGRAM): $(OBJECTS)
 	$(CC) $(CFLAGS) -o $(PROGRAM) $(OBJECTS) $(LIBRARIES)
 
-cmlexer.o: cmlexer.c cmparser.tab.h globals.h
-	$(CC) $(CFLAGS) -c cmlexer.c
+cmlexer.o: src/cmlexer.c src/cmparser.tab.h src/globals.h
+	$(CC) $(CFLAGS) -c src/cmlexer.c
 
-cmlexer.c: cmlexer.l 
-	$(LEX)  -ocmlexer.c cmlexer.l 
+cmlexer.c: src/cmlexer.l 
+	$(LEX)  -osrc/cmlexer.c src/cmlexer.l 
 
 clean:
 	$(RM) $(PROGRAM) $(OBJECTS) 
