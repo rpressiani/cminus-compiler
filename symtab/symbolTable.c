@@ -12,11 +12,20 @@ int scopeDepth;
 
 /* global function prototypes */
 
-//allocate the global scope entry and symbol table --and set scopeDepth to 0
+// Allocate the global scope entry and symbol table --and set scopeDepth to 0
 // The global scope remains till the end of the program
 // return 1 on success, 0 on failure (such as a failed malloc)
-int		initSymbolTable() 
-{
+int initSymbolTable() {
+    SymbolTableStackEntryPtr stackEntry = malloc(sizeof(SymbolTableStackEntry));
+    if (stackEntry == NULL) return 0;
+
+    stackEntry -> symbolTablePtr = malloc(sizeof(SymbolTablePtr));
+    stackEntry -> prevScope = NULL;
+
+    symbolStackTop = stackEntry;
+    scopeDepth = 0;
+
+    return 1;
 }
 
 
