@@ -84,16 +84,17 @@ void printElement(ElementPtr symelement) {
 // must use the printElement function given above
 void printSymbolTable() {
     // TODO Implement for multiple symbolTables
-    HashTableEntry* hashTable = symbolStackTop->symbolTablePtr->hashTable;
+    SymbolTablePtr p = symbolStackTop->symbolTablePtr;
 
     for (int i = 0; i < MAXHASHSIZE; i++) {
-        ElementPtr element = hashTable[i];
-        while (element) {
-            printElement(element);
-            element = element -> next;
+        HashTableEntry element = p->hashTable[i];
+        if (element) {
+            while (TRUE) {
+                printElement(p->hashTable[i]);
+                if (!element->next) break;
+            }
         }
     }
-
 }
 
 
