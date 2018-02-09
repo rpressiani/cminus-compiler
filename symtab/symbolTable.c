@@ -39,8 +39,19 @@ ElementPtr		symLookup(char *name)
 
 // Insert an element with a specified type in a particular line number
 // initialize the scope depth of the entry from the global var scopeDepth
-ElementPtr		symInsert(char *name, struct type *type, int line)
-{
+ElementPtr symInsert(char *name, struct type *type, int line) {
+    HashTableEntry newEntry = malloc(sizeof(Element));
+    newEntry->key = hash(name, MAXHASHSIZE);
+    newEntry->id = name;
+    newEntry->linenumber = line;
+    newEntry->scope = scopeDepth;
+    newEntry->stype = type;
+    newEntry->ast = NULL;
+    newEntry->next = NULL;
+
+    symbolStackTop->symbolTablePtr->hashTable[newEntry->key] = newEntry;
+
+    return newEntry;
 }
 
 
