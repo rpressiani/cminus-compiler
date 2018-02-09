@@ -22,6 +22,11 @@ int initSymbolTable() {
     if (stackEntry == NULL) return 0;
 
     stackEntry -> symbolTablePtr = malloc(sizeof(SymbolTablePtr));
+
+    for (int i = 0; i < MAXHASHSIZE; i++) {
+        stackEntry->symbolTablePtr->hashTable[i] = NULL;
+    }
+
     stackEntry -> prevScope = NULL;
 
     symbolStackTop = stackEntry;
