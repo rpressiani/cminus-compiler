@@ -45,25 +45,35 @@ int initSymbolTable() {
 
 // Look up a given entry 
 ElementPtr symLookup(char *name) {
-    // TODO Implement for multiple symbolTables
     int h = hash(name, MAXHASHSIZE);
-    HashTableEntry entry = symbolStackTop->symbolTablePtr->hashTable[h];
-    if (entry != NULL && strcmp(entry->id, name) == 0) {
-        return entry;
-    } else if (entry != NULL && strcmp(entry->id, name) != 0) {
-        entry = entry->next;
+    SymbolTableStackEntryPtr st = symbolStackTop;
 
-        while(entry) {
-            if (strcmp(entry->id, name) == 0) {
-                return entry;
-            } else {
-                entry = entry->next;
-            }
+    while (st) {
+        HashTableEntry entry = st->symbolTablePtr->hashTable[h];
+
+        if (entry == NULL) {
+            st = st->prevScope;
+            continue;
         }
-        return NULL;
-    } else {
-        return NULL;
+
+        if (strcmp(entry->id, name) == 0) {
+            return entry;
+        } else {
+            entry = entry->next;
+
+            while(entry) {
+                if (strcmp(entry->id, name) == 0) {
+                    return entry;
+                } else {
+                    entry = entry->next;
+                }
+            }
+
+            st = st->prevScope;
+        }
     }
+
+    return NULL;
 }
 
 
