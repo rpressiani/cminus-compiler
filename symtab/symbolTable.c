@@ -37,9 +37,27 @@ int initSymbolTable() {
 
 
 // Look up a given entry 
-// ElementPtr symLookup(char *name) {
+ElementPtr symLookup(char *name) {
+    // TODO Implement for multiple symbolTables
+    int h = hash(name, MAXHASHSIZE);
+    HashTableEntry entry = symbolStackTop->symbolTablePtr->hashTable[h];
+    if (entry != NULL && strcmp(entry->id, name) == 0) {
+        return entry;
+    } else if (entry != NULL && strcmp(entry->id, name) != 0) {
+        entry = entry->next;
 
-// }
+        while(entry) {
+            if (strcmp(entry->id, name) == 0) {
+                return entry;
+            } else {
+                entry = entry->next;
+            }
+        }
+        return NULL;
+    } else {
+        return NULL;
+    }
+}
 
 
 // Insert an element with a specified type in a particular line number
