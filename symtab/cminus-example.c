@@ -13,8 +13,6 @@ int main()
         int carray[20];
         int counter;
         junk();
-        
+
     }
 }
-
-        

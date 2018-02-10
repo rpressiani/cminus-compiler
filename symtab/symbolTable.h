@@ -14,9 +14,9 @@
 enum TypeKind {VOID, INT, ARRAY, FUNCTION};
 
 struct type {
-    enum TypeKind kind;   /* one from the enum above */
-    int  dimension; /* for arrays */
-    struct type *function; /*function argument and return types */
+    enum    TypeKind kind;          /* one from the enum above */
+    int     dimension;              /* for arrays */
+    struct  type *function;         /*function argument and return types */
 };
 
 typedef struct type Type;
@@ -24,13 +24,13 @@ typedef struct type Type;
 typedef struct type *TypePtr;
         
 struct element {
-    int     key;
-    char *      id;        
+    int             key;
+    char *          id;
     int             linenumber;
-    int             scope;   /* scope depth at declaration */
-    TypePtr stype;        /* pointer to the type infomation */
-    void *ast;           // AST information, skip for this homework
-    struct element  *next;      /* pointer to the next symbol with the same hash table index */
+    int             scope;          /* scope depth at declaration */
+    TypePtr         stype;          /* pointer to the type infomation */
+    void            *ast;           /* AST information, skip for this homework */
+    struct element  *next;          /* pointer to the next symbol with the same hash table index */
 };
 
 typedef struct element Element;
@@ -42,14 +42,14 @@ typedef ElementPtr HashTableEntry;
 /* data structure of the symbol table */
 
 struct symbolTable {
-    HashTableEntry  hashTable[MAXHASHSIZE];     /* hash table  */
+    HashTableEntry hashTable[MAXHASHSIZE];  /* hash table  */
 } SymbolTable;
 
 typedef struct symbolTable *SymbolTablePtr;
 
 struct symbolTableStackEntry {
-    SymbolTablePtr          symbolTablePtr;
-    struct symbolTableStackEntry    *prevScope; //previous scope
+    SymbolTablePtr                  symbolTablePtr;
+    struct symbolTableStackEntry    *prevScope;     //previous scope
 } SymbolTableStackEntry;
 
 typedef struct symbolTableStackEntry *SymbolTableStackEntryPtr;

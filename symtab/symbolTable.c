@@ -12,8 +12,6 @@ SymbolTableStackEntryPtr symbolStackTop;
 int scopeDepth;
 
 
-/* global function prototypes */
-
 SymbolTableStackEntryPtr createSymbolTable() {
     SymbolTableStackEntryPtr stackEntry = malloc(sizeof(SymbolTableStackEntry));
     if (stackEntry == NULL) return stackEntry;
@@ -26,6 +24,8 @@ SymbolTableStackEntryPtr createSymbolTable() {
 
     return stackEntry;
 }
+
+/* global function prototypes */
 
 // Allocate the global scope entry and symbol table --and set scopeDepth to 0
 // The global scope remains till the end of the program
@@ -128,8 +128,6 @@ void leaveScope() {
 }
 
 
-
-
 // Do not modify this function
 void printElement(ElementPtr symelement) {
     if (symelement != NULL) {
@@ -142,6 +140,7 @@ void printElement(ElementPtr symelement) {
     }
     else printf("Wrong call! symbol table entry NULL\n");
 }
+
 
 // Should traverse through the entire symbol table and print it
 // must use the printElement function given above
