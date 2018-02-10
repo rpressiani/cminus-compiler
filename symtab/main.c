@@ -5,7 +5,7 @@ extern SymbolTableStackEntryPtr symbolStacktop;
 int main()
 {
     initSymbolTable();
-     // the following call adds a symbol hello in line 10 with unknown type
+// the following call adds a symbol hello in line 10 with unknown type
     symInsert("hello", NULL, 9);
 // create a new type structure for a integer variable
     TypePtr typ = (TypePtr) malloc(sizeof(Type));
@@ -13,11 +13,17 @@ int main()
 // the following call adds a symbol counter in line 10 with type int
     symInsert("counter", typ, 10);
 
-// the following code must return the entry created above
-   ElementPtr s;
-   s = symLookup("counter");
+    printf("SymbolTable:\n");
+    printSymbolTable();
+    printf("\n");
 
-    
+// the following code must return the entry created above
+    ElementPtr s;
+    s = symLookup("counter");
+    printf("Check insert:\n");
+    printElement(s);
+    printf("\n");
+
 // Entering a new scope
     enterScope();
 
@@ -33,11 +39,20 @@ int main()
     typ2->dimension = 20;
 
     symInsert("counter", typ2, 14);
+    printf("SymbolTable:\n");
+    printSymbolTable();
+    printf("\n");
+
 //The following code must return the symbol table entry for counter on line 14xo
-   s = symLookup("counter");
-   leaveScope();
+    s = symLookup("counter");
+    printf("Check insert:\n");
+    printElement(s);
+    printf("\n");
+    leaveScope();
 //This must return symbol table entry for counter on line  10
-   s = symLookup("counter");
-    
+    s = symLookup("counter");
+    printf("Check insert:\n");
+    printElement(s);
+    printf("\n");
 }
 

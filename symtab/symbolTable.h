@@ -61,6 +61,8 @@ ElementPtr  symInsert(char *, struct type * , int );
 int         enterScope();
 void        leaveScope();
 int         hash(char *, int );
+void        printSymbolTable();
+void        printElement(ElementPtr);
 
 
 #endif
