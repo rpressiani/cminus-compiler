@@ -124,7 +124,9 @@ int enterScope() {
 // Pop an entry off the symbol stack
 // This should modify top and change scope depth
 void leaveScope() {
+    SymbolTableStackEntryPtr old = symbolStackTop;
     symbolStackTop = symbolStackTop->prevScope;
+    free(old);
 }
 
 
