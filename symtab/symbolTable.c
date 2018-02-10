@@ -77,6 +77,7 @@ ElementPtr symInsert(char *name, struct type *type, int line) {
         symbolStackTop->symbolTablePtr->hashTable[newEntry->key] = newEntry;
     } else {
         HashTableEntry last = symbolStackTop->symbolTablePtr->hashTable[newEntry->key];
+        
         while(last->next) {
             last = last->next;
         }
@@ -107,9 +108,9 @@ ElementPtr symInsert(char *name, struct type *type, int line) {
 // Do not modify this function
 void printElement(ElementPtr symelement) {
     if (symelement != NULL) {
-        printf("Line %d: %s\n", symelement->linenumber,symelement->id);
+        printf("Line %d: %s\n", symelement->linenumber, symelement->id);
     }
-    else printf("Wrong call! symbol table entry NULL");
+    else printf("Wrong call! symbol table entry NULL\n");
 }
 
 // Should traverse through the entire symbol table and print it
