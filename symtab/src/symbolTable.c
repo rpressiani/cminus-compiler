@@ -123,6 +123,7 @@ void leaveScope() {
         symbolStackTop = symbolStackTop->prevScope;
         free(old->symbolTablePtr->hashTable);
         free(old);
+        scopeDepth--;
     }
 }
 
