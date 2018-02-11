@@ -6,27 +6,43 @@ YACC=bison
 MV=/bin/mv
 RM=/bin/rm
 CP=/bin/cp
+MKDIR=/bin/mkdir
 
 LIBRARIES=  
 
 CFLAGS=-g -Wall
 YFLAGS=-d
 
-PROGRAM=bin/symboltable
+SRCDIR=src
+OBJDIR=obj
+BINDIR=bin
 
-OBJECTS=main.o symbolTable.o
+_PROGRAM=symboltable
+PROGRAM=$(patsubst %,$(BINDIR)/%,$(_PROGRAM))
 
-SOURCES=src/main.c src/symbolTable.c
+_SOURCES=main.c symbolTable.c
+SOURCES=$(patsubst %,$(SRCDIR)/%,$(_SOURCES))
+
+_OBJECTS=main.o symbolTable.o
+OBJECTS=$(patsubst %,$(OBJDIR)/%,$(_OBJECTS))
 
 
 $(PROGRAM): $(OBJECTS)
-	mkdir -p bin
+	$(MKDIR) -p $(BINDIR)
 	$(CC) $(CFLAGS) -o $(PROGRAM) $(OBJECTS) $(LIBRARIES)
 
+obj/symbolTable.o: src/symboltable.c
+	$(MKDIR) -p $(OBJDIR)
+	$(CC) $(CFLAGS) -c -o obj/symbolTable.o src/symbolTable.c
+
+obj/main.o: src/main.c
+	$(MKDIR) -p $(OBJDIR)
+	$(CC) $(CFLAGS) -c -o obj/main.o src/main.c
+
 clean:
-	$(RM) $(PROGRAM) $(OBJECTS) 
+	$(RM) -rf $(OBJDIR) $(BINDIR)
 
 submit:
-	mkdir submit
+	$(MKDIR) submit
 	cp symbolTable.c submit
 	turnin -ccs473 -psymtab submit
