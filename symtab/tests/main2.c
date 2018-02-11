@@ -1,5 +1,5 @@
 
-#include "../symbolTable.h"
+#include "../src/symbolTable.h"
 extern SymbolTableStackEntryPtr top;
 
 int main()
