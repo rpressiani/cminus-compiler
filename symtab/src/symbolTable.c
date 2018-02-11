@@ -51,26 +51,15 @@ ElementPtr symLookup(char *name) {
     while (st) {
         HashTableEntry entry = st->symbolTablePtr->hashTable[h];
 
-        if (entry == NULL) {
-            st = st->prevScope;
-            continue;
-        }
-
-        if (strcmp(entry->id, name) == 0) {
-            return entry;
-        } else {
-            entry = entry->next;
-
-            while(entry) {
-                if (strcmp(entry->id, name) == 0) {
-                    return entry;
-                } else {
-                    entry = entry->next;
-                }
+        while (entry) {
+            if (strcmp(entry->id, name) == 0) {
+                return entry;
+            } else {
+                entry = entry->next;
             }
-
-            st = st->prevScope;
         }
+
+        st = st->prevScope;
     }
 
     return NULL;
