@@ -16,7 +16,7 @@ SymbolTableStackEntryPtr createSymbolTable() {
     SymbolTableStackEntryPtr stackEntry = malloc(sizeof(SymbolTableStackEntry));
     if (stackEntry == NULL) return stackEntry;
 
-    stackEntry -> symbolTablePtr = malloc(sizeof(SymbolTable));
+    stackEntry -> symbolTablePtr = malloc(sizeof(struct symbolTable));
 
     for (int i = 0; i < MAXHASHSIZE; i++) {
         stackEntry->symbolTablePtr->hashTable[i] = NULL;
