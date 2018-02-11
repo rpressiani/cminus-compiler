@@ -133,14 +133,9 @@ void leaveScope() {
 // Do not modify this function
 void printElement(ElementPtr symelement) {
     if (symelement != NULL) {
-        printf(
-            "Line %d: %s, scopeDepth: %d\n",
-            symelement->linenumber,
-            symelement->id,
-            symelement->scope
-        );
+        printf("Line %d: %s", symelement->linenumber, symelement->id);
     }
-    else printf("Wrong call! symbol table entry NULL\n");
+    else printf("Wrong call! symbol table entry NULL");
 }
 
 
