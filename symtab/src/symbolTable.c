@@ -14,9 +14,13 @@ int scopeDepth;
 
 SymbolTableStackEntryPtr createSymbolTable() {
     SymbolTableStackEntryPtr stackEntry = malloc(sizeof(SymbolTableStackEntry));
-    if (stackEntry == NULL) return stackEntry;
+    if (stackEntry == NULL) return NULL;
 
     stackEntry -> symbolTablePtr = malloc(sizeof(struct symbolTable));
+    if (stackEntry -> symbolTablePtr == NULL) {
+        free(stackEntry);
+        return NULL;
+    }
 
     for (int i = 0; i < MAXHASHSIZE; i++) {
         stackEntry->symbolTablePtr->hashTable[i] = NULL;
@@ -72,6 +76,7 @@ ElementPtr symInsert(char *name, struct type *type, int line) {
     HashTableEntry newEntry = malloc(sizeof(Element));
 
     newEntry->key = hash(name, MAXHASHSIZE);
+    // printf("[INSERT - %s] hash: %d\n", name, newEntry->key);
     newEntry->id = name;
     newEntry->linenumber = line;
     newEntry->scope = scopeDepth;
@@ -113,9 +118,12 @@ int enterScope() {
 // Pop an entry off the symbol stack
 // This should modify top and change scope depth
 void leaveScope() {
-    SymbolTableStackEntryPtr old = symbolStackTop;
-    symbolStackTop = symbolStackTop->prevScope;
-    free(old);
+    if (symbolStackTop->prevScope != NULL) {
+        SymbolTableStackEntryPtr old = symbolStackTop;
+        symbolStackTop = symbolStackTop->prevScope;
+        free(old->symbolTablePtr->hashTable);
+        free(old);
+    }
 }
 
 
@@ -123,6 +131,7 @@ void leaveScope() {
 void printElement(ElementPtr symelement) {
     if (symelement != NULL) {
         printf("Line %d: %s", symelement->linenumber, symelement->id);
+        printf("\n");
     }
     else printf("Wrong call! symbol table entry NULL");
 }
@@ -141,6 +150,7 @@ void printSymbolTable() {
             HashTableEntry element = p->hashTable[i];
             while (element) {
                 printElement(element);
+                // printf("[LOOKUP] hash: %d\n", element->key);
                 element = element->next;
             }
         }
