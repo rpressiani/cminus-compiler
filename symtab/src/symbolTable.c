@@ -11,23 +11,10 @@ SymbolTableStackEntryPtr symbolStackTop;
 
 int scopeDepth;
 
-
-SymbolTableStackEntryPtr createSymbolTable() {
-    SymbolTableStackEntryPtr stackEntry = malloc(sizeof(SymbolTableStackEntry));
-    if (stackEntry == NULL) return NULL;
-
-    stackEntry -> symbolTablePtr = malloc(sizeof(struct symbolTable));
-    if (stackEntry -> symbolTablePtr == NULL) {
-        free(stackEntry);
-        return NULL;
-    }
-
-    for (int i = 0; i < MAXHASHSIZE; i++) {
-        stackEntry->symbolTablePtr->hashTable[i] = NULL;
-    }
-
-    return stackEntry;
-}
+int hash(char *, int );
+void printSymbolTable();
+void printElement(ElementPtr);
+SymbolTableStackEntryPtr createSymbolTable();
 
 /* global function prototypes */
 
@@ -144,7 +131,8 @@ void printSymbolTable() {
     while(current != NULL) {
         SymbolTablePtr p = current->symbolTablePtr;
 
-        for (int i = 0; i < MAXHASHSIZE; i++) {
+        int i;
+        for (i = 0; i < MAXHASHSIZE; i++) {
             HashTableEntry element = p->hashTable[i];
             while (element) {
                 printElement(element);
@@ -160,9 +148,30 @@ void printSymbolTable() {
 
 int hash(char* str, int maxHashSize) {
     int sum = 0;
-    for (int i = 0; i < strlen(str); ++i) {
+    int i;
+    
+    for (i = 0; i < strlen(str); ++i) {
         sum += str[i];
     }
 
     return sum % maxHashSize;
+}
+
+
+SymbolTableStackEntryPtr createSymbolTable() {
+    SymbolTableStackEntryPtr stackEntry = malloc(sizeof(SymbolTableStackEntry));
+    if (stackEntry == NULL) return NULL;
+
+    stackEntry -> symbolTablePtr = malloc(sizeof(struct symbolTable));
+    if (stackEntry -> symbolTablePtr == NULL) {
+        free(stackEntry);
+        return NULL;
+    }
+
+    int i;
+    for (i = 0; i < MAXHASHSIZE; i++) {
+        stackEntry->symbolTablePtr->hashTable[i] = NULL;
+    }
+
+    return stackEntry;
 }
