@@ -54,5 +54,7 @@ int main()
     printf("Check insert:\n");
     printElement(s);
     printf("\n");
+
+    return 0;
 }
 
