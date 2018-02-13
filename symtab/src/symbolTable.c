@@ -119,10 +119,7 @@ int enterScope() {
 // This should modify top and change scope depth
 void leaveScope() {
     if (symbolStackTop->prevScope != NULL) {
-        SymbolTableStackEntryPtr old = symbolStackTop;
         symbolStackTop = symbolStackTop->prevScope;
-        free(old->symbolTablePtr->hashTable);
-        free(old);
         scopeDepth--;
     }
 }
