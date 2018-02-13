@@ -13,7 +13,6 @@ int main()
 // the following call adds a symbol counter in line 10 with type int
     symInsert("counter", typ, 10);
 
-    printf("SymbolTable:\n");
     printSymbolTable();
     printf("\n");
 
@@ -39,7 +38,6 @@ int main()
     typ2->dimension = 20;
 
     symInsert("counter", typ2, 14);
-    printf("SymbolTable:\n");
     printSymbolTable();
     printf("\n");
 
