@@ -1,3 +1,13 @@
+/*
+*
+*   Homework 2 - CS473 Compilers Design
+*
+*   Author: Riccardo Pressiani
+*   NetID:  rpress4
+*   UIN:    650547946
+*
+*/
+
 
 #include <stdio.h>
 #include <string.h>
@@ -63,7 +73,6 @@ ElementPtr symInsert(char *name, struct type *type, int line) {
     HashTableEntry newEntry = malloc(sizeof(Element));
 
     newEntry->key = hash(name, MAXHASHSIZE);
-    // printf("[INSERT - %s] hash: %d\n", name, newEntry->key);
     newEntry->id = name;
     newEntry->linenumber = line;
     newEntry->scope = scopeDepth;
@@ -136,7 +145,6 @@ void printSymbolTable() {
             HashTableEntry element = p->hashTable[i];
             while (element) {
                 printElement(element);
-                // printf("[LOOKUP] hash: %d\n", element->key);
                 element = element->next;
             }
         }
