@@ -22,8 +22,6 @@ SymbolTableStackEntryPtr symbolStackTop;
 int scopeDepth;
 
 int hash(char *, int );
-void printSymbolTable();
-void printElement(ElementPtr);
 SymbolTableStackEntryPtr createSymbolTable();
 
 /* global function prototypes */
@@ -125,7 +123,6 @@ void leaveScope() {
 void printElement(ElementPtr symelement) {
     if (symelement != NULL) {
         printf("Line %d: %s", symelement->linenumber, symelement->id);
-        printf("\n");
     }
     else printf("Wrong call! symbol table entry NULL");
 }
@@ -135,22 +132,29 @@ void printElement(ElementPtr symelement) {
 // must use the printElement function given above
 void printSymbolTable() {
 
+    printf("----- SymbolTable -----\n");
+
     SymbolTableStackEntryPtr current = symbolStackTop;
 
     while(current != NULL) {
         SymbolTablePtr p = current->symbolTablePtr;
+
+        printf("ScopeDepth: %d\n", p->hashTable[0]->scope);
 
         int i;
         for (i = 0; i < MAXHASHSIZE; i++) {
             HashTableEntry element = p->hashTable[i];
             while (element) {
                 printElement(element);
+                printf("\n");
                 element = element->next;
             }
         }
 
+        printf("\n");
         current = current->prevScope;
     }
+    printf("-----------------------\n");
 }
 
 
