@@ -31,7 +31,34 @@ void	yyerror(const char *);
 /* Your token names must match Project 1 */
 /* The file cmparser.tab.h was gets generated here */
 
-%token TOK_ELSE 
+%token TOK_ELSE
+%token TOK_IF
+%token TOK_RETURN
+%token TOK_VOID
+%token TOK_INT
+%token TOK_WHILE
+%token TOK_ID
+%token TOK_NUM
+%token TOK_PLUS
+%token TOK_MINUS
+%token TOK_MULT
+%token TOK_DIV
+%token TOK_LT
+%token TOK_LE
+%token TOK_GT
+%token TOK_GE
+%token TOK_EQ
+%token TOK_NE
+%token TOK_ASSIGN
+%token TOK_SEMI
+%token TOK_COMMA
+%token TOK_LPAREN
+%token TOK_RPAREN
+%token TOK_LSQ
+%token TOK_RSQ
+%token TOK_LBRACE
+%token TOK_RBRACE
+%token TOK_ERROR
 
 /* associativity and precedence */
 /* specify operator precedence (taken care of by grammar) and associatity here --uncomment */
