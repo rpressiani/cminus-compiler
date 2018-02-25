@@ -65,10 +65,21 @@ void	yyerror(const char *);
 
 //%left 
 //%right 
+//%nonassoc
 
-//%nonassoc 
+%left TOK_MULT
+%left TOK_DIV
+%left TOK_PLUS
+%left TOK_MINUS
+%nonassoc TOK_LT
+%nonassoc TOK_GT
+%nonassoc TOK_LE
+%nonassoc TOK_GE
+%left TOK_EQ
+%left TOK_NE
+%right TOK_ASSIGN
 
-%nonassoc error
+// %nonassoc error
 
 /* Begin your grammar specification here */
 %%
