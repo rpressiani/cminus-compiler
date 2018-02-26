@@ -78,6 +78,9 @@ void    yyerror(const char *);
 %left TOK_NE
 %right TOK_ASSIGN
 
+%nonassoc TOK_RPAREN
+%nonassoc TOK_ELSE
+
 %nonassoc error
 
 /* Begin your grammar specification here */
@@ -153,10 +156,16 @@ statements
     ;
 
 statement
-    :   expression_stmt
+    :   selection_stmt
+    |   expression_stmt
     |   compound_stmt
     |   iteration_stmt
     |   return_stmt
+    ;
+
+selection_stmt
+    :   TOK_IF TOK_LPAREN expression TOK_RPAREN statement
+    |   TOK_IF TOK_LPAREN expression TOK_RPAREN statement TOK_ELSE statement
     ;
 
 iteration_stmt
