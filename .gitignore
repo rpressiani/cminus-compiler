@@ -54,3 +54,6 @@ dkms.conf
 # Custom
 bin
 cmlexer.c
+parser/*.tab.*
+parser/cmparser.c
+
