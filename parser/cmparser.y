@@ -156,6 +156,7 @@ statement
     :   expression_stmt
     |   compound_stmt
     |   iteration_stmt
+    |   return_stmt
     ;
 
 iteration_stmt
@@ -165,6 +166,11 @@ iteration_stmt
 expression_stmt
     :   expression TOK_SEMI
     |   TOK_SEMI
+    ;
+
+return_stmt
+    :   TOK_RETURN expression TOK_SEMI
+    |   TOK_RETURN TOK_SEMI
     ;
 
 expression
