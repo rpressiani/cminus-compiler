@@ -98,7 +98,8 @@ var_declarations    : var_declarations var_declaration;
 fun_declarations    : fun_declarations fun_declaration
                      | fun_declaration;
 
-var_declaration     : type_specifier TOK_ID TOK_SEMI;
+var_declaration     : type_specifier TOK_ID TOK_SEMI
+                     | type_specifier TOK_ID TOK_LSQ TOK_NUM TOK_RSQ TOK_SEMI
 
 type_specifier      : TOK_INT | TOK_VOID;
 
