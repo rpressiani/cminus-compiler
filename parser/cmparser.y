@@ -84,76 +84,134 @@ void    yyerror(const char *);
 %%
 
 
-start   : declarations
-        {
-            /* Action to accept */
-        }
-; /* note that the rule ends with a semicolon */
+start
+    :   declarations
+    {
+        /* Action to accept */
+    }
+    ; /* note that the rule ends with a semicolon */
 
-declarations    : var_declarations fun_declarations;
+declarations
+    :   var_declarations fun_declarations
+    ;
 
-var_declarations    : var_declarations var_declaration;
-                     | /* empty */;
+var_declarations
+    :   var_declarations var_declaration;
+    |   /* empty */
+    ;
 
-fun_declarations    : fun_declarations fun_declaration
-                     | fun_declaration;
+fun_declarations
+    :   fun_declarations fun_declaration
+    |   fun_declaration
+    ;
 
-var_declaration     : type_specifier TOK_ID TOK_SEMI
-                     | type_specifier TOK_ID TOK_LSQ TOK_NUM TOK_RSQ TOK_SEMI
+var_declaration
+    :   type_specifier TOK_ID TOK_SEMI
+    |   type_specifier TOK_ID TOK_LSQ TOK_NUM TOK_RSQ TOK_SEMI
+    ;
 
-type_specifier      : TOK_INT | TOK_VOID;
+type_specifier
+    :   TOK_INT
+    |   TOK_VOID
+    ;
 
-fun_declaration     : type_specifier TOK_ID TOK_LPAREN params TOK_RPAREN compound_stmt;
+fun_declaration
+    :   type_specifier TOK_ID TOK_LPAREN params TOK_RPAREN compound_stmt
+    ;
 
-params              : param_list | TOK_VOID;
+params
+    :   param_list
+    |   TOK_VOID
+    ;
 
-param_list          : param_list TOK_COMMA param | param;
+param_list
+    :   param_list TOK_COMMA param
+    |   param
+    ;
 
-param               : type_specifier TOK_ID | type_specifier TOK_ID TOK_LSQ TOK_RSQ
+param
+    :   type_specifier TOK_ID
+    |   type_specifier TOK_ID TOK_LSQ TOK_RSQ
+    ;
 
-compound_stmt       : TOK_LBRACE local_declarations statements TOK_RBRACE;
+compound_stmt
+    :   TOK_LBRACE local_declarations statements TOK_RBRACE
+    ;
 
-local_declarations  : local_declarations local_declaration
-                     | /* empty */;
+local_declarations
+    :   local_declarations local_declaration
+    |   /* empty */
+    ;
 
-local_declaration   : var_declaration;
+local_declaration
+    :   var_declaration
+    ;
 
-statements          : statements statement
-                     | /* empty */;
+statements
+    :   statements statement
+    |   /* empty */
+    ;
 
-statement           : expression_stmt | compound_stmt;
+statement
+    :   expression_stmt
+    |   compound_stmt
+    ;
 
-expression_stmt     : expression TOK_SEMI | TOK_SEMI;
+expression_stmt
+    :   expression TOK_SEMI
+    |   TOK_SEMI
+    ;
 
-expression          : var TOK_ASSIGN expression | simple_expression
+expression
+    :   var TOK_ASSIGN expression
+    |   simple_expression
+    ;
 
-var                 : TOK_ID | TOK_ID TOK_LSQ expression TOK_RSQ;
+var
+    :   TOK_ID
+    |   TOK_ID TOK_LSQ expression TOK_RSQ
+    ;
 
-simple_expression   : additive_expression rel_op additive_expression | additive_expression
+simple_expression
+    :   additive_expression rel_op additive_expression
+    |   additive_expression
+    ;
 
-rel_op              : TOK_LT
-                     | TOK_LE
-                     | TOK_GT
-                     | TOK_GE
-                     | TOK_EQ
-                     | TOK_NE
-                    ;
+rel_op
+    :   TOK_LT
+    |   TOK_LE
+    |   TOK_GT
+    |   TOK_GE
+    |   TOK_EQ
+    |   TOK_NE
+    ;
 
-additive_expression : additive_expression add_op term | term;
+additive_expression
+    :   additive_expression add_op term
+    |   term
+    ;
 
-add_op              : TOK_PLUS
-                     | TOK_MINUS;
+add_op
+    :   TOK_PLUS
+    |   TOK_MINUS
+    ;
 
-term                : term mult_op factor | factor;
+term
+    :   term mult_op factor
+    |   factor
+    ;
 
-mult_op             : TOK_MULT
-                     | TOK_DIV;
+mult_op
+    :   TOK_MULT
+    |   TOK_DIV
+    ;
 
-factor              : TOK_LPAREN expression TOK_RPAREN
-                    | var
-                    | call 
-                    | TOK_NUM
-                    ;
+factor
+    :   TOK_LPAREN expression TOK_RPAREN
+    |   var
+    |   call 
+    |   TOK_NUM
+    ;
 
 call
     :   TOK_ID TOK_LPAREN args TOK_RPAREN
