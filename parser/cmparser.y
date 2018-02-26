@@ -121,8 +121,53 @@ local_declaration   : var_declaration;
 statements          : statements statement
                      | /* empty */;
 
-statement           : compound_stmt;
+statement           : expression_stmt | compound_stmt;
 
+expression_stmt     : expression TOK_SEMI | TOK_SEMI;
+
+expression          : var TOK_ASSIGN expression | simple_expression
+
+var                 : TOK_ID | TOK_ID TOK_LSQ expression TOK_RSQ;
+
+simple_expression   : additive_expression rel_op additive_expression | additive_expression
+
+rel_op              : TOK_LT
+                     | TOK_LE
+                     | TOK_GT
+                     | TOK_GE
+                     | TOK_EQ
+                     | TOK_NE
+                    ;
+
+additive_expression : additive_expression add_op term | term;
+
+add_op              : TOK_PLUS
+                     | TOK_MINUS;
+
+term                : term mult_op factor | factor;
+
+mult_op             : TOK_MULT
+                     | TOK_DIV;
+
+factor              : TOK_LPAREN expression TOK_RPAREN
+                    | var
+                    | call 
+                    | TOK_NUM
+                    ;
+
+call
+    :   TOK_ID TOK_LPAREN args TOK_RPAREN
+    ;
+
+args
+    :   args_list
+    |   /* empty */
+    ;
+
+args_list
+    :   args_list TOK_COMMA expression
+    |   expression
+    ;
 
 
 %%
