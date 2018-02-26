@@ -8,17 +8,16 @@
 /* external function prototypes */
 extern int yylex();
 extern int initLex(int ,  char **);
- 
-    
+
 
 /* external global variables */
 
-extern int		yydebug;
-extern int		yylineno;
+extern int      yydebug;
+extern int      yylineno;
 
 
 /* function prototypes */ 
-void	yyerror(const char *);
+void    yyerror(const char *);
 
 /* global variables */
 
@@ -79,17 +78,34 @@ void	yyerror(const char *);
 %left TOK_NE
 %right TOK_ASSIGN
 
-// %nonassoc error
+%nonassoc error
 
 /* Begin your grammar specification here */
 %%
 
 
-Start	: /* put your RHS for this rule here */
+start   : declarations
         {
+            /* Action to accept */
         }
-	
-  ; /* note that the rule ends with a semicolon */
+; /* note that the rule ends with a semicolon */
+
+declarations    : var_declarations fun_declarations;
+
+var_declarations    : var_declarations var_declaration;
+                     | /* empty */;
+
+fun_declarations    : fun_declarations fun_declaration
+                     | fun_declaration;
+
+var_declaration     : type_specifier TOK_ID TOK_SEMI;
+
+type_specifier      : TOK_INT | TOK_VOID;
+
+fun_declaration     : type_specifier TOK_ID TOK_LPAREN TOK_VOID TOK_RPAREN compound_stmt;
+
+compound_stmt       : TOK_LBRACE TOK_RBRACE;
+
 %%
 void yyerror (char const *s) {
        fprintf (stderr, "Line %d: %s\n", yylineno, s);
@@ -97,14 +113,13 @@ void yyerror (char const *s) {
 
 int main(int argc, char **argv){
 
-	initLex(argc,argv);
+    initLex(argc,argv);
 
 #ifdef YYLLEXER
    while (gettok() !=0) ; //gettok returns 0 on EOF
     return;
 #else
     yyparse();
-    
 #endif
-    
-} 
+
+}
