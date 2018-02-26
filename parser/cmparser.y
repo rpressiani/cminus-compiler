@@ -155,6 +155,11 @@ statements
 statement
     :   expression_stmt
     |   compound_stmt
+    |   iteration_stmt
+    ;
+
+iteration_stmt
+    :   TOK_WHILE TOK_LPAREN expression TOK_RPAREN statement
     ;
 
 expression_stmt
