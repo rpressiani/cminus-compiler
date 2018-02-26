@@ -102,7 +102,13 @@ var_declaration     : type_specifier TOK_ID TOK_SEMI;
 
 type_specifier      : TOK_INT | TOK_VOID;
 
-fun_declaration     : type_specifier TOK_ID TOK_LPAREN TOK_VOID TOK_RPAREN compound_stmt;
+fun_declaration     : type_specifier TOK_ID TOK_LPAREN params TOK_RPAREN compound_stmt;
+
+params              : param_list | TOK_VOID;
+
+param_list          : param_list TOK_COMMA param | param;
+
+param               : type_specifier TOK_ID | type_specifier TOK_ID TOK_LSQ TOK_RSQ
 
 compound_stmt       : TOK_LBRACE TOK_RBRACE;
 
