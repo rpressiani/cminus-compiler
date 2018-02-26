@@ -111,7 +111,19 @@ param_list          : param_list TOK_COMMA param | param;
 
 param               : type_specifier TOK_ID | type_specifier TOK_ID TOK_LSQ TOK_RSQ
 
-compound_stmt       : TOK_LBRACE TOK_RBRACE;
+compound_stmt       : TOK_LBRACE local_declarations statements TOK_RBRACE;
+
+local_declarations  : local_declarations local_declaration
+                     | /* empty */;
+
+local_declaration   : var_declaration;
+
+statements          : statements statement
+                     | /* empty */;
+
+statement           : compound_stmt;
+
+
 
 %%
 void yyerror (char const *s) {
