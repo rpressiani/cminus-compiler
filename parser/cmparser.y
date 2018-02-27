@@ -23,6 +23,8 @@ void    yyerror(const char *);
 
 %}
 
+%define parse.error verbose
+
 /* YYSTYPE */
 
 /* terminals */
