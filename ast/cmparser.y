@@ -312,6 +312,7 @@ void yyerror (char const *s) {
 int main(int argc, char **argv){
 
 	initLex(argc,argv);
+	initSymbolTable();
 
 #ifdef YYLLEXER
    while (gettok() !=0) ; //gettok returns 0 on EOF
