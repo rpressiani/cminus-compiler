@@ -25,7 +25,7 @@ void    yyerror(const char *);
 
 /* global variables */
 
-AstNodePtr  program;
+AstNodePtr program;
  
 
 %}
@@ -49,7 +49,7 @@ AstNodePtr  program;
 %token <cVal> TOK_ID 
 %token <iVal> TOK_NUM
 
-%type <nodePtr> Declarations Functions
+%type <nodePtr> Declarations Functions Fun_Declaration
 %type <type> Type_Specifier 
 %type <nodePtr> Compound_Stmt Statements Statement
 %type <nodePtr> Expr_Statement If_Else_Statement Selection_Stmt Iteration_Stmt Return_Stmt
@@ -80,16 +80,12 @@ Declarations
     : Functions { 
         program = $1;
     }
-    | Var_Declaration Declarations {
-    }
-;
+    | Var_Declaration Declarations {}
+    ;
 
-Functions    : Fun_Declaration {
-                       
-               }
-         | Fun_Declaration Functions {
-                    
-               }
+Functions
+    :   Fun_Declaration { $$ = $1; }
+    |   Fun_Declaration Functions {}
 ;
 
 Var_Declaration
@@ -113,10 +109,23 @@ Var_Declaration
     }
 ;
 
-Fun_Declaration : Type_Specifier TOK_ID TOK_LPAREN Params TOK_RPAREN Compound_Stmt {
-
-                           }
-;
+Fun_Declaration
+    :   Type_Specifier TOK_ID TOK_LPAREN Params TOK_RPAREN Compound_Stmt {
+        if (!symLookup($2)) {
+            symInsert($2, new_type(FUNCTION), yylineno);
+            
+            AstNodePtr node = (AstNode *)malloc(sizeof(AstNode));
+            node->nKind = METHOD;
+            node->nLinenumber = yylineno;
+            node->nSymbolPtr = symLookup($2);
+            node->nSymbolTabPtr = symbolStackTop->symbolTablePtr;
+            printSymbolTable();
+            $$ = node;
+        } else {
+            yyerror("var redefinition");
+        }
+    }
+    ;
 
 Params : Param_List {
                
@@ -334,7 +343,7 @@ int main(int argc, char **argv){
 #else
     yyparse();
 
-    // print_Ast();
+    print_Ast();
 
 #endif
     
