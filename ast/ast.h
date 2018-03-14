@@ -31,11 +31,3 @@ AstNodePtr  new_ExprNode(ExpKind kind) ;
 AstNodePtr new_StmtNode(StmtKind kind);
 
 Type* new_type(TypeKind kind);
-
-
-
-
-
-
-
-
