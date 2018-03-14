@@ -226,5 +226,5 @@ int initLex(int argc, char **argv){
     yyin = stdin;
 
   // while (gettok() !=0) ; //gettok returns 0 on EOF
-  //  return;
+    return 1;
 } 

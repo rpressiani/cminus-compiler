@@ -320,8 +320,8 @@ int main(int argc, char **argv){
 #else
     yyparse();
 
-//    print_Ast();
-    
+    print_Ast();
+
 #endif
     
 } 
