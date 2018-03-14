@@ -21,5 +21,7 @@ AstNodePtr new_StmtNode(StmtKind kind)
 //creates a new type node for entry into symbol table
 Type* new_type(TypeKind kind)
 {
-    return NULL;
+    Type *typ = (Type *)malloc(sizeof(Type));
+    typ->kind = kind;
+    return typ;
 }

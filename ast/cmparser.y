@@ -141,17 +141,10 @@ Param : Type_Specifier TOK_ID  {
       
                 }
 ;
+
 Type_Specifier
-    :   TOK_INT {
-        Type *typ = (Type *)malloc(sizeof(Type));
-        typ->kind = INT;
-        $$ = typ;
-    }
-    |   TOK_VOID {
-        Type *typ = (Type *)malloc(sizeof(Type));
-        typ->kind = VOID;
-        $$ = typ;
-    }
+    :   TOK_INT     { $$ = new_type(INT); }
+    |   TOK_VOID    { $$ = new_type(VOID); }
     ;
 
 Compound_Stmt : TOK_LBRACE Statements TOK_RBRACE {
