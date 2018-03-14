@@ -25,8 +25,8 @@ void    yyerror(const char *);
 
 /* global variables */
 
+int error = FALSE;
 AstNodePtr program;
- 
 
 %}
 
@@ -84,8 +84,13 @@ Declarations
     ;
 
 Functions
-    :   Fun_Declaration { $$ = $1; }
-    |   Fun_Declaration Functions {}
+    :   Fun_Declaration {
+        $$ = $1;
+    }
+    |   Fun_Declaration Functions {
+        $1->sibling = $2;
+        $$ = $1;
+    }
 ;
 
 Var_Declaration
@@ -113,12 +118,15 @@ Fun_Declaration
     :   Type_Specifier TOK_ID TOK_LPAREN Params TOK_RPAREN Compound_Stmt {
         if (!symLookup($2)) {
             symInsert($2, new_type(FUNCTION), yylineno);
-            
+
             AstNodePtr node = (AstNode *)malloc(sizeof(AstNode));
             node->nKind = METHOD;
-            node->nLinenumber = yylineno;
+            node->children[0] = NULL;
+            node->sibling = NULL;
             node->nSymbolPtr = symLookup($2);
             node->nSymbolTabPtr = symbolStackTop->symbolTablePtr;
+            node->nLinenumber = yylineno;
+
             printSymbolTable();
             $$ = node;
         } else {
@@ -329,7 +337,8 @@ Args_List : Args_List TOK_COMMA Expression {
 
 %%
 void yyerror (char const *s) {
-       fprintf (stderr, "Line %d: %s\n", yylineno, s);
+    error = TRUE;
+    fprintf (stderr, "Line %d: %s\n", yylineno, s);
 }
 
 int main(int argc, char **argv){
@@ -343,8 +352,10 @@ int main(int argc, char **argv){
 #else
     yyparse();
 
+if (!error) {
     print_Ast();
+}
 
 #endif
-    
-} 
+
+}
