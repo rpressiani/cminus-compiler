@@ -6,13 +6,17 @@ YACC=bison
 MV=/bin/mv
 RM=/bin/rm
 CP=/bin/cp
+MKDIR=/bin/mkdir
 
 LIBRARIES=  -ll
 
 CFLAGS=-g 
 YFLAGS=-d
 
-PROGRAM=cmparser
+BINDIR=bin
+
+_PROGRAM=cmparser
+PROGRAM=$(patsubst %,$(BINDIR)/%,$(_PROGRAM))
 
 OBJECTS=cmparser.o cmlexer.o symbolTable.o ast.o util.o
 
@@ -22,6 +26,7 @@ CTEMPS=cmlexer.c cmparser.c cmparser.tab.h cmparser.tab.c cmparser.output
 
 
 $(PROGRAM): $(OBJECTS)
+	$(MKDIR) -p $(BINDIR)
 	$(CC) $(CFLAGS) -o $(PROGRAM) $(OBJECTS) $(LIBRARIES)
 
 util.o: util.c
