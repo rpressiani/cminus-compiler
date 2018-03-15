@@ -121,19 +121,13 @@ Fun_Declaration
         if (!symLookup($2)) {
             symInsert($2, new_type(FUNCTION), yylineno);
 
-            AstNodePtr node = (AstNode *)malloc(sizeof(AstNode));
-            node->nKind = METHOD;
-            
-            if ($4) {
-                node->children[0] = $4;
-            } else {
-                node->children[0] = NULL;
-            }
+            AstNodePtr node;
 
-            node->sibling = NULL;
-            node->nSymbolPtr = symLookup($2);
-            node->nSymbolTabPtr = symbolStackTop->symbolTablePtr;
-            node->nLinenumber = yylineno;
+            if ($4) {
+                node = new_Node(METHOD, $4, $2, yylineno);
+            } else {
+                node = new_Node(METHOD, NULL, $2, yylineno);
+            }
 
             printSymbolTable();
             $$ = node;
@@ -163,13 +157,7 @@ Param
         if (!symLookup($2) || symLookup($2)->scope < scopeDepth) {
             symInsert($2, $1, yylineno);
 
-            AstNodePtr node = (AstNode *)malloc(sizeof(AstNode));
-            node->nKind = FORMALVAR;
-            node->children[0] = NULL;
-            node->sibling = NULL;
-            node->nSymbolPtr = symLookup($2);
-            node->nSymbolTabPtr = symbolStackTop->symbolTablePtr;
-            node->nLinenumber = yylineno;
+            AstNodePtr node = new_Node(FORMALVAR, NULL, $2, yylineno);
 
             printSymbolTable();
 
@@ -184,16 +172,9 @@ Param
         if (!symLookup($2) || symLookup($2)->scope < scopeDepth) {
 
             $1->kind = ARRAY;
-
             symInsert($2, $1, yylineno);
 
-            AstNodePtr node = (AstNode *)malloc(sizeof(AstNode));
-            node->nKind = FORMALVAR;
-            node->children[0] = NULL;
-            node->sibling = NULL;
-            node->nSymbolPtr = symLookup($2);
-            node->nSymbolTabPtr = symbolStackTop->symbolTablePtr;
-            node->nLinenumber = yylineno;
+            AstNodePtr node = new_Node(FORMALVAR, NULL, $2, yylineno);
 
             printSymbolTable();
 
