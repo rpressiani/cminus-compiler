@@ -118,6 +118,7 @@ Var_Declaration
 Fun_Declaration
     :   Type_Specifier TOK_ID TOK_LPAREN Params TOK_RPAREN Compound_Stmt {
         resetScope();
+
         if (!symLookup($2)) {
             symInsert($2, new_type(FUNCTION), yylineno);
 
@@ -204,167 +205,101 @@ Compound_Stmt
 
         $$ = node;
     }
-;
+    ;
 
 Local_Declarations
     :   Var_Declaration Local_Declarations {}
     |   Var_Declaration {}
-;
+    ;
 
-Statements : Statement Statements {
+Statements
+    :   Statement Statements
+    |
+    ;
 
-            }
-       | {
-            
-            }
-;
+Statement
+    :   Expr_Statement {}
+    |   Compound_Stmt {}
+    |   Selection_Stmt {}
+    |   Iteration_Stmt {}
+    |   Return_Stmt {}
+    ;
 
-Statement : Expr_Statement  {
-            
-            }
-      | Compound_Stmt {
-            
-            }
-      | Selection_Stmt {
-      
-            }
-      | Iteration_Stmt {
-      
-            }
-      | Return_Stmt {
-        
-            }
-;
+Expr_Statement
+    :   Expression TOK_SEMI {}
+    |   TOK_SEMI {}
+    ;
 
-Expr_Statement : Expression TOK_SEMI {
+Selection_Stmt
+    :   If_Else_Statement %prec TOK_IF {}
+    |   If_Else_Statement TOK_ELSE Statement {}
+    ;
 
-            }
-           | TOK_SEMI {
-           
-                }
-;
+If_Else_Statement
+    :   TOK_IF TOK_LPAREN Expression TOK_RPAREN Statement {}
+    ;
 
-Selection_Stmt : If_Else_Statement %prec TOK_IF {
+Iteration_Stmt
+    :   TOK_WHILE TOK_LPAREN Expression TOK_RPAREN Statement {}
+    ;
 
-            }
-           | If_Else_Statement TOK_ELSE Statement {
-           
-                }
-;
+Return_Stmt
+    :   TOK_RETURN Expression TOK_SEMI {}
+    |   TOK_RETURN TOK_SEMI {}
+    ;
 
-If_Else_Statement : TOK_IF TOK_LPAREN Expression TOK_RPAREN Statement {
+Expression
+    :   Var TOK_ASSIGN Expression {}
+    |   Simple_Expression {}
+    ;
 
-            }
-;
+Var
+    :   TOK_ID {}
+    |   TOK_ID TOK_LSQ Expression TOK_RSQ {}
+    ;
 
-Iteration_Stmt : TOK_WHILE TOK_LPAREN Expression TOK_RPAREN Statement {
+Simple_Expression
+    :   Additive_Expression TOK_GT Additive_Expression {}
+    |   Additive_Expression TOK_LT Additive_Expression {}
+    |   Additive_Expression TOK_GE Additive_Expression {}
+    |   Additive_Expression TOK_LE Additive_Expression {}
+    |   Additive_Expression TOK_EQ Additive_Expression {}
+    |   Additive_Expression TOK_NE Additive_Expression {}
+    |   Additive_Expression {}
+    ;
 
-            }
-;
+Additive_Expression
+    :   Additive_Expression TOK_PLUS Term {}
+    |   Additive_Expression TOK_MINUS Term {}
+    |   Term {}
+    ;
 
-Return_Stmt : TOK_RETURN Expression TOK_SEMI {
+Term
+    :   Term TOK_MULT Factor {}
+    |   Term TOK_DIV Factor {}
+    |   Factor {}
+    ;
 
-            }
-        | TOK_RETURN TOK_SEMI {
-        
-                }
-;
+Factor
+    :   TOK_LPAREN Expression TOK_RPAREN {}
+    |   Var {}
+    |   Call {}
+    |   TOK_NUM {}
+    ;
 
-Expression : Var TOK_ASSIGN Expression  {
+Call
+    :   TOK_ID TOK_LPAREN Args TOK_RPAREN {}
+    ;
 
-            }
-            | Simple_Expression {
-        
-                }
-;
+Args
+    :   Args_List {}
+    |   {}
+    ;
 
-Var : TOK_ID {
-    
-            }
-    | TOK_ID TOK_LSQ Expression TOK_RSQ {
-    
-                }
-;
-
-Simple_Expression : Additive_Expression TOK_GT Additive_Expression {
-
-            }
-                  | Additive_Expression TOK_LT Additive_Expression {
-          
-            }
-                  | Additive_Expression TOK_GE Additive_Expression {
-          
-            }
-                  | Additive_Expression TOK_LE Additive_Expression {
-            
-            }
-                  | Additive_Expression TOK_EQ Additive_Expression {
-          
-            }
-                  | Additive_Expression TOK_NE Additive_Expression {
-          
-            }
-          | Additive_Expression {
-          
-            }
-;
-
-Additive_Expression : Additive_Expression TOK_PLUS Term {
-
-            }
-                    | Additive_Expression TOK_MINUS Term {
-            
-                }
-            | Term {
-            
-                }
-;
-
-Term : Term TOK_MULT Factor  {
-
-            }
-     |  Term TOK_DIV Factor {
-     
-                }
-     | Factor {
-                
-            }
-;
-
-Factor : TOK_LPAREN Expression TOK_RPAREN {
-
-            }
-       | Var {
-                
-            }
-       | Call {
-       
-                }
-       | TOK_NUM {
-       
-                }
-;
-
-Call : TOK_ID TOK_LPAREN Args TOK_RPAREN {
-
-            }
-;
-
-Args : Args_List {
-            
-            }
-     | {
-     
-                }
-;
-
-Args_List : Args_List TOK_COMMA Expression {
-
-            }
-      | Expression {
-      
-            }
-;
+Args_List
+    :   Args_List TOK_COMMA Expression {}
+    |   Expression {}
+    ;
 
 %%
 void yyerror (char const *s) {
