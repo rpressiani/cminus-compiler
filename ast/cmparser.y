@@ -92,7 +92,7 @@ Functions
         $1->sibling = $2;
         $$ = $1;
     }
-;
+    ;
 
 Var_Declaration
     :   Type_Specifier TOK_ID TOK_SEMI {
@@ -113,7 +113,7 @@ Var_Declaration
             yyerror("var redefinition");
         }
     }
-;
+    ;
 
 Fun_Declaration
     :   Type_Specifier TOK_ID TOK_LPAREN Params TOK_RPAREN Compound_Stmt {
@@ -138,8 +138,8 @@ Fun_Declaration
     ;
 
 Params
-    :   Param_List { $$ = $1; }
-    |   TOK_VOID { $$ = NULL; }
+    :   Param_List  { $$ = $1; }
+    |   TOK_VOID    { $$ = NULL; }
     ;
 
 Param_List
