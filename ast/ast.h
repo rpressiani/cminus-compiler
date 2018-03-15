@@ -30,6 +30,6 @@ AstNodePtr  new_ExprNode(ExpKind kind) ;
 
 AstNodePtr new_StmtNode(StmtKind kind);
 
-AstNodePtr new_Node(NodeKind kind, struct node* children, char* name, int nLinenumber);
+AstNodePtr new_Node(NodeKind kind, char* name, int nLinenumber);
 
 Type* new_type(TypeKind kind);

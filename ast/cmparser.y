@@ -121,13 +121,9 @@ Fun_Declaration
         if (!symLookup($2)) {
             symInsert($2, new_type(FUNCTION), yylineno);
 
-            AstNodePtr node;
+            AstNodePtr node = new_Node(METHOD, $2, yylineno);
 
-            if ($4) {
-                node = new_Node(METHOD, $4, $2, yylineno);
-            } else {
-                node = new_Node(METHOD, NULL, $2, yylineno);
-            }
+            if ($4) node->children[0] = $4;
 
             printSymbolTable();
             $$ = node;
@@ -157,7 +153,7 @@ Param
         if (!symLookup($2) || symLookup($2)->scope < scopeDepth) {
             symInsert($2, $1, yylineno);
 
-            AstNodePtr node = new_Node(FORMALVAR, NULL, $2, yylineno);
+            AstNodePtr node = new_Node(FORMALVAR, $2, yylineno);
 
             printSymbolTable();
 
@@ -174,7 +170,7 @@ Param
             $1->kind = ARRAY;
             symInsert($2, $1, yylineno);
 
-            AstNodePtr node = new_Node(FORMALVAR, NULL, $2, yylineno);
+            AstNodePtr node = new_Node(FORMALVAR, $2, yylineno);
 
             printSymbolTable();
 

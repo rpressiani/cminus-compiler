@@ -19,11 +19,11 @@ AstNodePtr new_StmtNode(StmtKind kind)
 }
 
 //creates a new node
-AstNodePtr new_Node(NodeKind kind, struct node* children, char* name, int nLinenumber)
+AstNodePtr new_Node(NodeKind kind, char* name, int nLinenumber)
 {
     AstNodePtr node = (AstNode *)malloc(sizeof(AstNode));
     node->nKind = kind;
-    node->children[0] = children;
+    node->children[0] = NULL;
     node->sibling = NULL;
     node->nSymbolPtr = symLookup(name);
     node->nSymbolTabPtr = symbolStackTop->symbolTablePtr;
