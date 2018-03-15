@@ -13,9 +13,17 @@ AstNodePtr  new_ExprNode(ExpKind kind)
 }
 
 //creates a new statement node
-AstNodePtr new_StmtNode(StmtKind kind)
+AstNodePtr new_StmtNode(StmtKind kind, int nLinenumber)
 {
-    return NULL;
+    AstNodePtr node = (AstNode *)malloc(sizeof(AstNode));
+    node->nKind = STMT;
+    node->sKind = kind;
+    node->children[0] = NULL;
+    node->sibling = NULL;
+    node->nSymbolTabPtr = symbolStackTop->symbolTablePtr;
+    node->nLinenumber = nLinenumber;
+
+    return node;
 }
 
 //creates a new node

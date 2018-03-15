@@ -26,9 +26,9 @@ typedef struct node {
 
 typedef AstNode *AstNodePtr;
 
-AstNodePtr  new_ExprNode(ExpKind kind) ;
+AstNodePtr new_ExprNode(ExpKind kind) ;
 
-AstNodePtr new_StmtNode(StmtKind kind);
+AstNodePtr new_StmtNode(StmtKind kind, int nLinenumber);
 
 AstNodePtr new_Node(NodeKind kind, char* name, int nLinenumber);
 

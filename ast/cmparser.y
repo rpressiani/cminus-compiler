@@ -98,7 +98,7 @@ Var_Declaration
     :   Type_Specifier TOK_ID TOK_SEMI {
         if (!symLookup($2)) {
             symInsert($2, $1, yylineno);
-            // printSymbolTable();
+            printSymbolTable();
         } else {
             yyerror("var redefinition");
         }
@@ -124,6 +124,7 @@ Fun_Declaration
             AstNodePtr node = new_Node(METHOD, $2, yylineno);
 
             if ($4) node->children[0] = $4;
+            if ($6) node->children[1] = $6;
 
             printSymbolTable();
             $$ = node;
@@ -134,8 +135,8 @@ Fun_Declaration
     ;
 
 Params
-    :   Param_List  { $$ = $1; }
-    |   TOK_VOID    { $$ = NULL; }
+    :   Param_List  { enterScope(); $$ = $1; }
+    |   TOK_VOID    { enterScope(); $$ = NULL; }
     ;
 
 Param_List
@@ -186,20 +187,28 @@ Type_Specifier
     |   TOK_VOID    { $$ = new_type(VOID); }
     ;
 
-Compound_Stmt : TOK_LBRACE Statements TOK_RBRACE {
+Compound_Stmt
+    :   TOK_LBRACE Statements TOK_RBRACE {
 
-            }
-              | TOK_LBRACE Local_Declarations Statements TOK_RBRACE {
-          
-                }
+        AstNodePtr node = new_StmtNode(COMPOUND_STMT, yylineno);
+
+        // ...
+
+        $$ = node;
+    }
+    |   TOK_LBRACE Local_Declarations Statements TOK_RBRACE {
+
+        AstNodePtr node = new_StmtNode(COMPOUND_STMT, yylineno);
+
+        // ...
+
+        $$ = node;
+    }
 ;
 
-Local_Declarations : Var_Declaration Local_Declarations {
-
-            }
-           | Var_Declaration {
-           
-            }
+Local_Declarations
+    :   Var_Declaration Local_Declarations {}
+    |   Var_Declaration {}
 ;
 
 Statements : Statement Statements {
