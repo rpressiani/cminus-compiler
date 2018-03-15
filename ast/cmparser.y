@@ -22,6 +22,7 @@ extern int scopeDepth;
 
 /* function prototypes */ 
 void    yyerror(const char *);
+void    resetScope();
 
 /* global variables */
 
@@ -49,7 +50,7 @@ AstNodePtr program;
 %token <cVal> TOK_ID 
 %token <iVal> TOK_NUM
 
-%type <nodePtr> Declarations Functions Fun_Declaration
+%type <nodePtr> Declarations Functions Fun_Declaration Params Param_List Param
 %type <type> Type_Specifier 
 %type <nodePtr> Compound_Stmt Statements Statement
 %type <nodePtr> Expr_Statement If_Else_Statement Selection_Stmt Iteration_Stmt Return_Stmt
@@ -77,10 +78,10 @@ Start
     ; /* note that the rule ends with a semicolon */
 
 Declarations
-    : Functions { 
+    :   Functions { 
         program = $1;
     }
-    | Var_Declaration Declarations {}
+    |   Var_Declaration Declarations {}
     ;
 
 Functions
@@ -116,12 +117,19 @@ Var_Declaration
 
 Fun_Declaration
     :   Type_Specifier TOK_ID TOK_LPAREN Params TOK_RPAREN Compound_Stmt {
+        resetScope();
         if (!symLookup($2)) {
             symInsert($2, new_type(FUNCTION), yylineno);
 
             AstNodePtr node = (AstNode *)malloc(sizeof(AstNode));
             node->nKind = METHOD;
-            node->children[0] = NULL;
+            
+            if ($4) {
+                node->children[0] = $4;
+            } else {
+                node->children[0] = NULL;
+            }
+
             node->sibling = NULL;
             node->nSymbolPtr = symLookup($2);
             node->nSymbolTabPtr = symbolStackTop->symbolTablePtr;
@@ -135,29 +143,66 @@ Fun_Declaration
     }
     ;
 
-Params : Param_List {
-               
-               }
-       | TOK_VOID {
-       
-                   }
-;
+Params
+    :   Param_List { $$ = $1; }
+    |   TOK_VOID { $$ = NULL; }
+    ;
 
-Param_List : Param_List TOK_COMMA Param {
+Param_List
+    :   Param TOK_COMMA Param_List {
+        $1->sibling = $3;
+        $$ = $1;
+    }
+    |   Param { $$ = $1; }
+    ;
 
-               }
-       | Param {
-                
-            }
-;
+Param
+    :   Type_Specifier TOK_ID {
+        if (scopeDepth == 0) enterScope();
 
-Param : Type_Specifier TOK_ID  {
-        
-            }
-      | Type_Specifier TOK_ID TOK_LSQ TOK_RSQ  {
-      
-                }
-;
+        if (!symLookup($2) || symLookup($2)->scope < scopeDepth) {
+            symInsert($2, $1, yylineno);
+
+            AstNodePtr node = (AstNode *)malloc(sizeof(AstNode));
+            node->nKind = FORMALVAR;
+            node->children[0] = NULL;
+            node->sibling = NULL;
+            node->nSymbolPtr = symLookup($2);
+            node->nSymbolTabPtr = symbolStackTop->symbolTablePtr;
+            node->nLinenumber = yylineno;
+
+            printSymbolTable();
+
+            $$ = node;
+        } else {
+            yyerror("var redefinition");
+        }
+    }
+    |   Type_Specifier TOK_ID TOK_LSQ TOK_RSQ {
+        if (scopeDepth == 0) enterScope();
+
+        if (!symLookup($2) || symLookup($2)->scope < scopeDepth) {
+
+            $1->kind = ARRAY;
+
+            symInsert($2, $1, yylineno);
+
+            AstNodePtr node = (AstNode *)malloc(sizeof(AstNode));
+            node->nKind = FORMALVAR;
+            node->children[0] = NULL;
+            node->sibling = NULL;
+            node->nSymbolPtr = symLookup($2);
+            node->nSymbolTabPtr = symbolStackTop->symbolTablePtr;
+            node->nLinenumber = yylineno;
+
+            printSymbolTable();
+
+            $$ = node;
+        } else {
+            yyerror("var redefinition");
+        }
+    }
+    ;
 
 Type_Specifier
     :   TOK_INT     { $$ = new_type(INT); }
@@ -339,6 +384,12 @@ Args_List : Args_List TOK_COMMA Expression {
 void yyerror (char const *s) {
     error = TRUE;
     fprintf (stderr, "Line %d: %s\n", yylineno, s);
+}
+
+void resetScope() {
+    while(scopeDepth > 0) {
+        leaveScope();
+    }
 }
 
 int main(int argc, char **argv){
