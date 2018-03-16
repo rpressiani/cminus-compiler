@@ -96,7 +96,6 @@ Functions
 
 Var_Declaration
     :   Type_Specifier TOK_ID TOK_SEMI {
-        printf("VARDEC %s\n", $2);
         if (!symLookup($2) || symLookup($2)->scope < scopeDepth) {
             symInsert($2, $1, yylineno);
         } else {
@@ -179,14 +178,12 @@ Param
     ;
 
 Type_Specifier
-    :   TOK_INT     { printf("INT\n"); $$ = new_type(INT); }
-    |   TOK_VOID    { printf("VOID\n"); $$ = new_type(VOID); }
+    :   TOK_INT     { $$ = new_type(INT); }
+    |   TOK_VOID    { $$ = new_type(VOID); }
     ;
 
 Compound_Stmt
     :   TOK_LBRACE { enterScope(); } Statements TOK_RBRACE {
-        printf("COMP\n");
-
         AstNodePtr node = new_StmtNode(COMPOUND_STMT, yylineno);
 
         if ($3) node->children[0] = $3;
@@ -194,8 +191,6 @@ Compound_Stmt
         $$ = node;
     }
     |   TOK_LBRACE { enterScope(); } Local_Declarations Statements TOK_RBRACE {
-        printf("COMP\n");
-
         AstNodePtr node = new_StmtNode(COMPOUND_STMT, yylineno);
 
         if ($4) node->children[0] = $4;
@@ -212,7 +207,6 @@ Local_Declarations
 Statements
     :   Statement Statements {
         if ($2) $1->sibling = $2;
-
         $$ = $1;
     }
     |   { $$ = NULL; }
@@ -228,7 +222,6 @@ Statement
 
 Expr_Statement
     :   Expression TOK_SEMI {
-        printf("EXPR_STMT\n");
         AstNodePtr node = new_StmtNode(EXPRESSION_STMT, yylineno);
 
         node->children[0] = $1;
@@ -249,7 +242,6 @@ If_Else_Statement
 
 Iteration_Stmt
     :   TOK_WHILE TOK_LPAREN Expression TOK_RPAREN Statement {
-        printf("ITER\n");
         AstNodePtr node = new_StmtNode(WHILE_STMT, yylineno);
 
         node->children[0] = $3;
@@ -274,7 +266,6 @@ Return_Stmt
 
 Expression
     :   Var TOK_ASSIGN Expression {
-        printf("EXPR\n");
         AstNodePtr node = new_ExprNode(ASSI_EXP, yylineno);
 
         node->children[0] = $1;
