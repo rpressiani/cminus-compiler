@@ -100,7 +100,9 @@ Var_Declaration
         if (!symLookup($2) || symLookup($2)->scope < scopeDepth) {
             symInsert($2, $1, yylineno);
         } else {
-            yyerror("var redefinition");
+            char *error;
+            asprintf(&error, "redefinition of '%s'", $2);
+            yyerror(error);
         }
     }
     |   Type_Specifier TOK_ID TOK_LSQ TOK_NUM TOK_RSQ TOK_SEMI {
@@ -108,7 +110,9 @@ Var_Declaration
             $1->dimension = $4;
             symInsert($2, $1, yylineno);
         } else {
-            yyerror("var redefinition");
+            char *error;
+            asprintf(&error, "redefinition of '%s'", $2);
+            yyerror(error);
         }
     }
     ;
@@ -130,7 +134,9 @@ Fun_Declaration
 
             $$ = node;
         } else {
-            yyerror("var redefinition");
+            char *error;
+            asprintf(&error, "redefinition of '%s'", $2);
+            yyerror(error);
         }
     }
     ;
@@ -157,7 +163,9 @@ Param
 
             $$ = node;
         } else {
-            yyerror("var redefinition");
+            char *error;
+            asprintf(&error, "redefinition of '%s'", $2);
+            yyerror(error);
         }
     }
     |   Type_Specifier TOK_ID TOK_LSQ TOK_RSQ {
@@ -168,7 +176,9 @@ Param
 
             $$ = node;
         } else {
-            yyerror("var redefinition");
+            char *error;
+            asprintf(&error, "redefinition of '%s'", $2);
+            yyerror(error);
         }
     }
     ;
@@ -290,7 +300,9 @@ Var
 
             $$ = node;
         } else {
-            yyerror("var never declared");
+            char *error;
+            asprintf(&error, "use of undeclared identifier '%s'", $1);
+            yyerror(error);
         }
     }
     |   TOK_ID TOK_LSQ Expression TOK_RSQ {
@@ -302,7 +314,9 @@ Var
 
             $$ = node;
         } else {
-            yyerror("var never declared");
+            char *error;
+            asprintf(&error, "use of undeclared identifier '%s'", $1);
+            yyerror(error);
         }
     }
     ;
