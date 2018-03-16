@@ -222,13 +222,11 @@ Statements
     ;
 
 Statement
-    :   Expr_Statement {
-        $$ = $1;
-    }
-    |   Compound_Stmt {}
-    |   Selection_Stmt {}
-    |   Iteration_Stmt {}
-    |   Return_Stmt {}
+    :   Expr_Statement  { $$ = $1; }
+    |   Compound_Stmt   {}
+    |   Selection_Stmt  {}
+    |   Iteration_Stmt  {}
+    |   Return_Stmt     { $$ = $1; }
     ;
 
 Expr_Statement
@@ -256,8 +254,16 @@ Iteration_Stmt
     ;
 
 Return_Stmt
-    :   TOK_RETURN Expression TOK_SEMI {}
-    |   TOK_RETURN TOK_SEMI {}
+    :   TOK_RETURN Expression TOK_SEMI {
+        AstNodePtr node = new_StmtNode(RETURN_STMT, yylineno);
+
+        node->children[0] = $2;
+
+        $$ = node;
+    }
+    |   TOK_RETURN TOK_SEMI {
+        $$ = new_StmtNode(RETURN_STMT, yylineno);
+    }
     ;
 
 Expression
