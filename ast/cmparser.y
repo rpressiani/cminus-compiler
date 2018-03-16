@@ -349,7 +349,7 @@ Term
     ;
 
 Factor
-    :   TOK_LPAREN Expression TOK_RPAREN {}
+    :   TOK_LPAREN Expression TOK_RPAREN { $$ = $2; }
     |   Var { $$ = $1; }
     |   Call {}
     |   TOK_NUM {
