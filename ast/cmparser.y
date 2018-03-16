@@ -211,7 +211,7 @@ Statements
 Statement
     :   Expr_Statement  { $$ = $1; }
     |   Compound_Stmt   { leaveScope(); $$ = $1; }
-    |   Selection_Stmt  {}
+    |   Selection_Stmt  { $$ = $1; }
     |   Iteration_Stmt  { $$ = $1; }
     |   Return_Stmt     { $$ = $1; }
     ;
@@ -228,12 +228,21 @@ Expr_Statement
     ;
 
 Selection_Stmt
-    :   If_Else_Statement %prec TOK_IF {}
-    |   If_Else_Statement TOK_ELSE Statement {}
+    :   If_Else_Statement %prec TOK_IF          { $$ = $1; }
+    |   If_Else_Statement TOK_ELSE Statement    {
+        $1->children[2] = $3;
+    }
     ;
 
 If_Else_Statement
-    :   TOK_IF TOK_LPAREN Expression TOK_RPAREN Statement {}
+    :   TOK_IF TOK_LPAREN Expression TOK_RPAREN Statement {
+        AstNodePtr node = new_StmtNode(IF_THEN_ELSE_STMT, yylineno);
+
+        node->children[0] = $3;
+        node->children[1] = $5;
+
+        $$ = node;
+    }
     ;
 
 Iteration_Stmt
