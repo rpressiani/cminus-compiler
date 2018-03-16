@@ -107,6 +107,7 @@ Var_Declaration
     }
     |   Type_Specifier TOK_ID TOK_LSQ TOK_NUM TOK_RSQ TOK_SEMI {
         if (!symLookup($2) || symLookup($2)->scope < scopeDepth) {
+            $1->kind = ARRAY;
             $1->dimension = $4;
             symInsert($2, $1, yylineno);
         } else {
