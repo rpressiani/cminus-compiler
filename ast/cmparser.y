@@ -54,7 +54,7 @@ AstNodePtr program;
 %type <type> Type_Specifier 
 %type <nodePtr> Compound_Stmt Statements Statement
 %type <nodePtr> Expr_Statement If_Else_Statement Selection_Stmt Iteration_Stmt Return_Stmt
-%type <nodePtr> Expression Simple_Expression Additive_Expression Factor Var Call
+%type <nodePtr> Expression Simple_Expression Additive_Expression Term Factor Var Call
 %type <nodePtr> Args Args_List
 /* associativity and precedence */
 
@@ -193,7 +193,7 @@ Compound_Stmt
 
         AstNodePtr node = new_StmtNode(COMPOUND_STMT, yylineno);
 
-        // ...
+        if ($2) node->children[0] = $2;
 
         $$ = node;
     }
@@ -201,7 +201,7 @@ Compound_Stmt
 
         AstNodePtr node = new_StmtNode(COMPOUND_STMT, yylineno);
 
-        // ...
+        if ($3) node->children[0] = $3;
 
         $$ = node;
     }
@@ -213,12 +213,18 @@ Local_Declarations
     ;
 
 Statements
-    :   Statement Statements
-    |
+    :   Statement Statements {
+        if ($2) $1->sibling = $2;
+
+        $$ = $1;
+    }
+    | { $$ = NULL; }
     ;
 
 Statement
-    :   Expr_Statement {}
+    :   Expr_Statement {
+        $$ = $1;
+    }
     |   Compound_Stmt {}
     |   Selection_Stmt {}
     |   Iteration_Stmt {}
@@ -226,7 +232,13 @@ Statement
     ;
 
 Expr_Statement
-    :   Expression TOK_SEMI {}
+    :   Expression TOK_SEMI {
+        AstNodePtr node = new_StmtNode(EXPRESSION_STMT, yylineno);
+
+        node->children[0] = $1;
+
+        $$ = node;
+    }
     |   TOK_SEMI {}
     ;
 
@@ -249,12 +261,32 @@ Return_Stmt
     ;
 
 Expression
-    :   Var TOK_ASSIGN Expression {}
-    |   Simple_Expression {}
+    :   Var TOK_ASSIGN Expression {
+        AstNodePtr node = new_ExprNode(ASSI_EXP, yylineno);
+
+        $1->nValue = $3->nValue;
+
+        node->children[0] = $1;
+        node->children[1] = $3;
+
+        $$ = node;
+    }
+    |   Simple_Expression { $$ = $1; }
     ;
 
 Var
-    :   TOK_ID {}
+    :   TOK_ID {
+
+        if (symLookup($1)) {
+            AstNodePtr node = new_ExprNode(VAR_EXP, yylineno);
+
+            node->nSymbolPtr = symLookup($1);
+
+            $$ = node;
+        } else {
+            yyerror("var never declared");
+        }
+    }
     |   TOK_ID TOK_LSQ Expression TOK_RSQ {}
     ;
 
@@ -265,26 +297,32 @@ Simple_Expression
     |   Additive_Expression TOK_LE Additive_Expression {}
     |   Additive_Expression TOK_EQ Additive_Expression {}
     |   Additive_Expression TOK_NE Additive_Expression {}
-    |   Additive_Expression {}
+    |   Additive_Expression { $$ = $1; }
     ;
 
 Additive_Expression
     :   Additive_Expression TOK_PLUS Term {}
     |   Additive_Expression TOK_MINUS Term {}
-    |   Term {}
+    |   Term { $$ = $1; }
     ;
 
 Term
     :   Term TOK_MULT Factor {}
     |   Term TOK_DIV Factor {}
-    |   Factor {}
+    |   Factor { $$ = $1; }
     ;
 
 Factor
     :   TOK_LPAREN Expression TOK_RPAREN {}
-    |   Var {}
+    |   Var { $$ = $1; }
     |   Call {}
-    |   TOK_NUM {}
+    |   TOK_NUM {
+        AstNodePtr node = new_ExprNode(CONST_EXP, yylineno);
+
+        node->nValue = $1;
+
+        $$ = node;
+    }
     ;
 
 Call

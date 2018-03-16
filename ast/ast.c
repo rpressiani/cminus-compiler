@@ -7,9 +7,17 @@ extern SymbolTableStackEntryPtr symbolStackTop;
 extern int scopeDepth;
 
 //creates a new expression node
-AstNodePtr  new_ExprNode(ExpKind kind) 
+AstNodePtr new_ExprNode(ExpKind kind, int nLinenumber)
 {
-    return NULL;
+    AstNodePtr node = (AstNode *)malloc(sizeof(AstNode));
+    node->nKind = EXPRESSION;
+    node->eKind = kind;
+    node->children[0] = NULL;
+    node->sibling = NULL;
+    node->nSymbolTabPtr = symbolStackTop->symbolTablePtr;
+    node->nLinenumber = nLinenumber;
+
+    return node;
 }
 
 //creates a new statement node
