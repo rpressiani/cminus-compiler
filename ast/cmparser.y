@@ -98,7 +98,6 @@ Var_Declaration
     :   Type_Specifier TOK_ID TOK_SEMI {
         if (!symLookup($2) || symLookup($2)->scope < scopeDepth) {
             symInsert($2, $1, yylineno);
-            printSymbolTable();
         } else {
             yyerror("var redefinition");
         }
@@ -108,7 +107,6 @@ Var_Declaration
             $1->kind = ARRAY;
             $1->dimension = $4;
             symInsert($2, $1, yylineno);
-            // printSymbolTable();
         } else {
             yyerror("var redefinition");
         }
@@ -127,7 +125,6 @@ Fun_Declaration
             if ($4) node->children[0] = $4;
             if ($6) node->children[1] = $6;
 
-            printSymbolTable();
             $$ = node;
         } else {
             yyerror("var redefinition");
@@ -157,8 +154,6 @@ Param
 
             AstNodePtr node = new_Node(FORMALVAR, $2, yylineno);
 
-            printSymbolTable();
-
             $$ = node;
         } else {
             yyerror("var redefinition");
@@ -173,8 +168,6 @@ Param
             symInsert($2, $1, yylineno);
 
             AstNodePtr node = new_Node(FORMALVAR, $2, yylineno);
-
-            printSymbolTable();
 
             $$ = node;
         } else {
