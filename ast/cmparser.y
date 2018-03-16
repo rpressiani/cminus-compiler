@@ -96,6 +96,7 @@ Functions
 
 Var_Declaration
     :   Type_Specifier TOK_ID TOK_SEMI {
+        printf("VARDEC %s\n", $2);
         if (!symLookup($2) || symLookup($2)->scope < scopeDepth) {
             symInsert($2, $1, yylineno);
         } else {
@@ -132,8 +133,8 @@ Fun_Declaration
     ;
 
 Params
-    :   Param_List  { enterScope(); $$ = $1; }
-    |   TOK_VOID    { enterScope(); $$ = NULL; }
+    :   Param_List  { $$ = $1; }
+    |   TOK_VOID    { $$ = NULL; }
     ;
 
 Param_List
@@ -146,6 +147,8 @@ Param_List
 
 Param
     :   Type_Specifier TOK_ID {
+        // TODO remove enterScope here and put it as mid-action rule
+        // TODO in fun_declaration before params
         if (scopeDepth == 0) enterScope();
 
         if (!symLookup($2) || symLookup($2)->scope < scopeDepth) {
@@ -159,6 +162,8 @@ Param
         }
     }
     |   Type_Specifier TOK_ID TOK_LSQ TOK_RSQ {
+        // TODO remove enterScope here and put it as mid-action rule
+        // TODO in fun_declaration before params
         if (scopeDepth == 0) enterScope();
 
         if (!symLookup($2) || symLookup($2)->scope < scopeDepth) {
@@ -174,24 +179,26 @@ Param
     ;
 
 Type_Specifier
-    :   TOK_INT     { $$ = new_type(INT); }
-    |   TOK_VOID    { $$ = new_type(VOID); }
+    :   TOK_INT     { printf("INT\n"); $$ = new_type(INT); }
+    |   TOK_VOID    { printf("VOID\n"); $$ = new_type(VOID); }
     ;
 
 Compound_Stmt
-    :   TOK_LBRACE Statements TOK_RBRACE {
-
-        AstNodePtr node = new_StmtNode(COMPOUND_STMT, yylineno);
-
-        if ($2) node->children[0] = $2;
-
-        $$ = node;
-    }
-    |   TOK_LBRACE Local_Declarations Statements TOK_RBRACE {
+    :   TOK_LBRACE { enterScope(); } Statements TOK_RBRACE {
+        printf("COMP\n");
 
         AstNodePtr node = new_StmtNode(COMPOUND_STMT, yylineno);
 
         if ($3) node->children[0] = $3;
+
+        $$ = node;
+    }
+    |   TOK_LBRACE { enterScope(); } Local_Declarations Statements TOK_RBRACE {
+        printf("COMP\n");
+
+        AstNodePtr node = new_StmtNode(COMPOUND_STMT, yylineno);
+
+        if ($4) node->children[0] = $4;
 
         $$ = node;
     }
@@ -208,19 +215,20 @@ Statements
 
         $$ = $1;
     }
-    | { $$ = NULL; }
+    |   { $$ = NULL; }
     ;
 
 Statement
     :   Expr_Statement  { $$ = $1; }
-    |   Compound_Stmt   {}
+    |   Compound_Stmt   { leaveScope(); $$ = $1; }
     |   Selection_Stmt  {}
-    |   Iteration_Stmt  {}
+    |   Iteration_Stmt  { $$ = $1; }
     |   Return_Stmt     { $$ = $1; }
     ;
 
 Expr_Statement
     :   Expression TOK_SEMI {
+        printf("EXPR_STMT\n");
         AstNodePtr node = new_StmtNode(EXPRESSION_STMT, yylineno);
 
         node->children[0] = $1;
@@ -240,7 +248,15 @@ If_Else_Statement
     ;
 
 Iteration_Stmt
-    :   TOK_WHILE TOK_LPAREN Expression TOK_RPAREN Statement {}
+    :   TOK_WHILE TOK_LPAREN Expression TOK_RPAREN Statement {
+        printf("ITER\n");
+        AstNodePtr node = new_StmtNode(WHILE_STMT, yylineno);
+
+        node->children[0] = $3;
+        node->children[1] = $5;
+
+        $$ = node;
+    }
     ;
 
 Return_Stmt
@@ -258,6 +274,7 @@ Return_Stmt
 
 Expression
     :   Var TOK_ASSIGN Expression {
+        printf("EXPR\n");
         AstNodePtr node = new_ExprNode(ASSI_EXP, yylineno);
 
         node->children[0] = $1;
@@ -388,8 +405,8 @@ Term
 
 Factor
     :   TOK_LPAREN Expression TOK_RPAREN { $$ = $2; }
-    |   Var { $$ = $1; }
-    |   Call {}
+    |   Var     { $$ = $1; }
+    |   Call    { $$ = $1; }
     |   TOK_NUM {
         AstNodePtr node = new_ExprNode(CONST_EXP, yylineno);
 
@@ -400,17 +417,27 @@ Factor
     ;
 
 Call
-    :   TOK_ID TOK_LPAREN Args TOK_RPAREN {}
+    :   TOK_ID TOK_LPAREN Args TOK_RPAREN {
+        AstNodePtr node = new_ExprNode(CALL_EXP, yylineno);
+
+        node->children[0] = $3;
+        node->fname = $1;
+
+        $$ = node;
+    }
     ;
 
 Args
-    :   Args_List {}
-    |   {}
+    :   Args_List { $$ = $1; }
+    |   { $$ = NULL; }
     ;
 
 Args_List
-    :   Args_List TOK_COMMA Expression {}
-    |   Expression {}
+    :   Expression TOK_COMMA Args_List {
+        $1->sibling = $3;
+        $$ = $1;
+    }
+    |   Expression { $$ = $1; }
     ;
 
 %%
