@@ -299,12 +299,54 @@ Var
     ;
 
 Simple_Expression
-    :   Additive_Expression TOK_GT Additive_Expression {}
-    |   Additive_Expression TOK_LT Additive_Expression {}
-    |   Additive_Expression TOK_GE Additive_Expression {}
-    |   Additive_Expression TOK_LE Additive_Expression {}
-    |   Additive_Expression TOK_EQ Additive_Expression {}
-    |   Additive_Expression TOK_NE Additive_Expression {}
+    :   Additive_Expression TOK_GT Additive_Expression {
+        AstNodePtr node = new_ExprNode(GT_EXP, yylineno);
+
+        node->children[0] = $1;
+        node->children[1] = $3;
+
+        $$ = node;
+    }
+    |   Additive_Expression TOK_LT Additive_Expression {
+        AstNodePtr node = new_ExprNode(LT_EXP, yylineno);
+
+        node->children[0] = $1;
+        node->children[1] = $3;
+
+        $$ = node;
+    }
+    |   Additive_Expression TOK_GE Additive_Expression {
+        AstNodePtr node = new_ExprNode(GE_EXP, yylineno);
+
+        node->children[0] = $1;
+        node->children[1] = $3;
+
+        $$ = node;
+    }
+    |   Additive_Expression TOK_LE Additive_Expression {
+        AstNodePtr node = new_ExprNode(LE_EXP, yylineno);
+
+        node->children[0] = $1;
+        node->children[1] = $3;
+
+        $$ = node;
+    }
+    |   Additive_Expression TOK_EQ Additive_Expression {
+        AstNodePtr node = new_ExprNode(EQ_EXP, yylineno);
+
+        node->children[0] = $1;
+        node->children[1] = $3;
+
+        $$ = node;
+    }
+    |   Additive_Expression TOK_NE Additive_Expression {
+        AstNodePtr node = new_ExprNode(NE_EXP, yylineno);
+
+        node->children[0] = $1;
+        node->children[1] = $3;
+
+        $$ = node;
+    }
     |   Additive_Expression { $$ = $1; }
     ;
 
