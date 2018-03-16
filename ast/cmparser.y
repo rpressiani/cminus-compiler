@@ -287,7 +287,18 @@ Var
             yyerror("var never declared");
         }
     }
-    |   TOK_ID TOK_LSQ Expression TOK_RSQ {}
+    |   TOK_ID TOK_LSQ Expression TOK_RSQ {
+        if (symLookup($1)) {
+            AstNodePtr node = new_ExprNode(ARRAY_EXP, yylineno);
+
+            node->nSymbolPtr = symLookup($1);
+            node->children[0] = $3;
+
+            $$ = node;
+        } else {
+            yyerror("var never declared");
+        }
+    }
     ;
 
 Simple_Expression
