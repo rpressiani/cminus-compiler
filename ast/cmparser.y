@@ -117,7 +117,7 @@ Fun_Declaration
         resetScope();
 
         if (!symLookup($2)) {
-            symInsert($2, new_type(FUNCTION), yylineno);
+            symInsert($2, $1, yylineno);
 
             AstNodePtr node = new_Node(METHOD, $2, yylineno);
 
