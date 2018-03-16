@@ -388,8 +388,8 @@ Term
 
 Factor
     :   TOK_LPAREN Expression TOK_RPAREN { $$ = $2; }
-    |   Var { $$ = $1; }
-    |   Call {}
+    |   Var     { $$ = $1; }
+    |   Call    { $$ = $1; }
     |   TOK_NUM {
         AstNodePtr node = new_ExprNode(CONST_EXP, yylineno);
 
@@ -400,17 +400,27 @@ Factor
     ;
 
 Call
-    :   TOK_ID TOK_LPAREN Args TOK_RPAREN {}
+    :   TOK_ID TOK_LPAREN Args TOK_RPAREN {
+        AstNodePtr node = new_ExprNode(CALL_EXP, yylineno);
+
+        node->children[0] = $3;
+        node->fname = $1;
+
+        $$ = node;
+    }
     ;
 
 Args
-    :   Args_List {}
-    |   {}
+    :   Args_List { $$ = $1; }
+    |   { $$ = NULL; }
     ;
 
 Args_List
-    :   Args_List TOK_COMMA Expression {}
-    |   Expression {}
+    :   Expression TOK_COMMA Args_List {
+        $1->sibling = $3;
+        $$ = $1;
+    }
+    |   Expression { $$ = $1; }
     ;
 
 %%
