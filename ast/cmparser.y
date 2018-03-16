@@ -264,8 +264,6 @@ Expression
     :   Var TOK_ASSIGN Expression {
         AstNodePtr node = new_ExprNode(ASSI_EXP, yylineno);
 
-        $1->nValue = $3->nValue;
-
         node->children[0] = $1;
         node->children[1] = $3;
 
@@ -314,8 +312,6 @@ Additive_Expression
     :   Additive_Expression TOK_PLUS Term {
         AstNodePtr node = new_ExprNode(ADD_EXP, yylineno);
 
-        node->nValue = $1->nValue + $3->nValue;
-
         node->children[0] = $1;
         node->children[1] = $3;
 
@@ -323,8 +319,6 @@ Additive_Expression
     }
     |   Additive_Expression TOK_MINUS Term {
         AstNodePtr node = new_ExprNode(SUB_EXP, yylineno);
-
-        node->nValue = $1->nValue - $3->nValue;
 
         node->children[0] = $1;
         node->children[1] = $3;
