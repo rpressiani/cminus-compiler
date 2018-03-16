@@ -56,6 +56,7 @@ AstNodePtr program;
 %type <nodePtr> Expr_Statement If_Else_Statement Selection_Stmt Iteration_Stmt Return_Stmt
 %type <nodePtr> Expression Simple_Expression Additive_Expression Term Factor Var Call
 %type <nodePtr> Args Args_List
+
 /* associativity and precedence */
 
 %nonassoc TOK_IF
@@ -113,7 +114,7 @@ Var_Declaration
     ;
 
 Fun_Declaration
-    :   Type_Specifier TOK_ID TOK_LPAREN Params TOK_RPAREN Compound_Stmt {
+    :   Type_Specifier TOK_ID TOK_LPAREN { enterScope(); } Params TOK_RPAREN Compound_Stmt {
         resetScope();
 
         if (!symLookup($2)) {
@@ -121,8 +122,8 @@ Fun_Declaration
 
             AstNodePtr node = new_Node(METHOD, $2, yylineno);
 
-            if ($4) node->children[0] = $4;
-            if ($6) node->children[1] = $6;
+            if ($5) node->children[0] = $5;
+            if ($7) node->children[1] = $7;
             Type* typ = new_type(FUNCTION);
             typ->function = $1;
             node->nType = typ;
@@ -149,10 +150,6 @@ Param_List
 
 Param
     :   Type_Specifier TOK_ID {
-        // TODO remove enterScope here and put it as mid-action rule
-        // TODO in fun_declaration before params
-        if (scopeDepth == 0) enterScope();
-
         if (!symLookup($2) || symLookup($2)->scope < scopeDepth) {
             symInsert($2, $1, yylineno);
 
@@ -164,10 +161,6 @@ Param
         }
     }
     |   Type_Specifier TOK_ID TOK_LSQ TOK_RSQ {
-        // TODO remove enterScope here and put it as mid-action rule
-        // TODO in fun_declaration before params
-        if (scopeDepth == 0) enterScope();
-
         if (!symLookup($2) || symLookup($2)->scope < scopeDepth) {
             symInsert($2, $1, yylineno);
 
