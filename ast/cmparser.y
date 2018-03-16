@@ -335,8 +335,22 @@ Additive_Expression
     ;
 
 Term
-    :   Term TOK_MULT Factor {}
-    |   Term TOK_DIV Factor {}
+    :   Term TOK_MULT Factor {
+        AstNodePtr node = new_ExprNode(MULT_EXP, yylineno);
+
+        node->children[0] = $1;
+        node->children[1] = $3;
+
+        $$ = node;
+    }
+    |   Term TOK_DIV Factor {
+        AstNodePtr node = new_ExprNode(DIV_EXP, yylineno);
+
+        node->children[0] = $1;
+        node->children[1] = $3;
+
+        $$ = node;
+    }
     |   Factor { $$ = $1; }
     ;
 
