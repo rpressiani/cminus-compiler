@@ -276,7 +276,6 @@ Expression
 
 Var
     :   TOK_ID {
-
         if (symLookup($1)) {
             AstNodePtr node = new_ExprNode(VAR_EXP, yylineno);
 
@@ -312,8 +311,26 @@ Simple_Expression
     ;
 
 Additive_Expression
-    :   Additive_Expression TOK_PLUS Term {}
-    |   Additive_Expression TOK_MINUS Term {}
+    :   Additive_Expression TOK_PLUS Term {
+        AstNodePtr node = new_ExprNode(ADD_EXP, yylineno);
+
+        node->nValue = $1->nValue + $3->nValue;
+
+        node->children[0] = $1;
+        node->children[1] = $3;
+
+        $$ = node;
+    }
+    |   Additive_Expression TOK_MINUS Term {
+        AstNodePtr node = new_ExprNode(SUB_EXP, yylineno);
+
+        node->nValue = $1->nValue - $3->nValue;
+
+        node->children[0] = $1;
+        node->children[1] = $3;
+
+        $$ = node;
+    }
     |   Term { $$ = $1; }
     ;
 
