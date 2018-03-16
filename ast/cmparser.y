@@ -123,6 +123,9 @@ Fun_Declaration
 
             if ($4) node->children[0] = $4;
             if ($6) node->children[1] = $6;
+            Type* typ = new_type(FUNCTION);
+            typ->function = $1;
+            node->nType = typ;
 
             $$ = node;
         } else {

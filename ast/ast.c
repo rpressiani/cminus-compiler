@@ -16,6 +16,7 @@ AstNodePtr new_ExprNode(ExpKind kind, int nLinenumber)
     node->children[1] = NULL;
     node->children[2] = NULL;
     node->sibling = NULL;
+    node->nType = NULL;
     node->nSymbolTabPtr = symbolStackTop->symbolTablePtr;
     node->nLinenumber = nLinenumber;
 
@@ -32,6 +33,7 @@ AstNodePtr new_StmtNode(StmtKind kind, int nLinenumber)
     node->children[1] = NULL;
     node->children[2] = NULL;
     node->sibling = NULL;
+    node->nType = NULL;
     node->nSymbolTabPtr = symbolStackTop->symbolTablePtr;
     node->nLinenumber = nLinenumber;
 
@@ -47,6 +49,7 @@ AstNodePtr new_Node(NodeKind kind, char* name, int nLinenumber)
     node->children[1] = NULL;
     node->children[2] = NULL;
     node->sibling = NULL;
+    node->nType = NULL;
     node->nSymbolPtr = symLookup(name);
     node->nSymbolTabPtr = symbolStackTop->symbolTablePtr;
     node->nLinenumber = nLinenumber;
