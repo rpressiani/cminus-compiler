@@ -107,9 +107,10 @@ Var_Declaration
     }
     |   Type_Specifier TOK_ID TOK_LSQ TOK_NUM TOK_RSQ TOK_SEMI {
         if (!symLookup($2) || symLookup($2)->scope < scopeDepth) {
-            $1->kind = ARRAY;
-            $1->dimension = $4;
-            symInsert($2, $1, yylineno);
+            Type* typ = new_type(ARRAY);
+            typ->function = $1;
+            typ->dimension = $4;
+            symInsert($2, typ, yylineno);
         } else {
             char *error;
             asprintf(&error, "redefinition of '%s'", $2);
@@ -123,14 +124,16 @@ Fun_Declaration
         resetScope();
 
         if (!symLookup($2)) {
-            symInsert($2, $1, yylineno);
+
+            Type* typ = new_type(FUNCTION);
+            typ->function = $1;
+
+            symInsert($2, typ, yylineno);
 
             AstNodePtr node = new_Node(METHOD, $2, yylineno);
 
             if ($5) node->children[0] = $5;
             if ($7) node->children[1] = $7;
-            Type* typ = new_type(FUNCTION);
-            typ->function = $1;
             node->nType = typ;
 
             $$ = node;
@@ -171,7 +174,9 @@ Param
     }
     |   Type_Specifier TOK_ID TOK_LSQ TOK_RSQ {
         if (!symLookup($2) || symLookup($2)->scope < scopeDepth) {
-            symInsert($2, $1, yylineno);
+            Type* typ = new_type(ARRAY);
+            typ->function = $1;
+            symInsert($2, typ, yylineno);
 
             AstNodePtr node = new_Node(FORMALVAR, $2, yylineno);
 
