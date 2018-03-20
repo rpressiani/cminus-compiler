@@ -1,0 +1,4 @@
+int peach(void)
+{
+	return;
+}

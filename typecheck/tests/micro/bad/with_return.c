@@ -1,0 +1,4 @@
+int grape(void)
+{
+	return ;
+}
