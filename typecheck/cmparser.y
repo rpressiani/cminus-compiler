@@ -49,7 +49,7 @@ FILE *outfile;
 %token <cVal> TOK_ID 
 %token <iVal> TOK_NUM
 
-%type <nodePtr> Declarations Functions Fun_Declaration Compound_Stmt_Function
+%type <nodePtr> Declarations Functions Fun_Declaration
 %type <type> Type_Specifier 
 %type <nodePtr> Compound_Stmt Statements Statement
 %type <nodePtr> Expr_Statement If_Else_Statement Selection_Stmt Iteration_Stmt Return_Stmt
@@ -78,10 +78,10 @@ Declarations : Functions { program = $1;}
 	     | Var_Declaration Declarations { }
 ;
 
-Functions    : Fun_Declaration { $$ = $1 }
+Functions    : Fun_Declaration { $$ = $1; }
 	     | Fun_Declaration Functions { 
 	     				   $1->sibling = $2;
-	     				   $$ = $1 	
+	     				   $$ = $1;
            				}
 ;
 
@@ -144,14 +144,15 @@ Fun_Declaration : Type_Specifier TOK_ID TOK_LPAREN {
 					$<nodePtr>4->children[0] = $5; 	//refer to the previous semantic action node with $<nodePtr>4, 
 													//since it is the fourth component of the rule
 				} 					//we also need to specify its type. children[0] is represented by Params. 
-				Compound_Stmt_Function     {
-				       			$<nodePtr>4->children[1] = $8; 	//Compound Statement. According to the handout, the children[1] should be set to Compund_Stmt.
-				       			$$ = $<nodePtr>4; //this is the last action, $$, i.e. Fun_Declaration is set to the node created in the first semantic action, which represents
-				 		   } 	 	  		       	     
+				Compound_Stmt { /* changed from Compound_Stmt_Function to Compount_Stmt */
+					$<nodePtr>4->children[1] = $8; 	//Compound Statement. According to the handout, the children[1] should be set to Compund_Stmt.
+					$$ = $<nodePtr>4; //this is the last action, $$, i.e. Fun_Declaration is set to the node created in the first semantic action, which represents
+					leaveScope(); /* added to pop off the scope entered earlier in Fun_Declaration */
+				}  	 	  		       	     
 											 
 ;
 
-Params : Param_List {$$ = $1}
+Params : Param_List {$$ = $1;}
        | TOK_VOID {$$=NULL;}
 ;
 
@@ -247,29 +248,6 @@ Compound_Stmt : TOK_LBRACE {
                 	   }
 ;
 
-Compound_Stmt_Function : TOK_LBRACE {  
-				$<nodePtr>$ =  new_StmtNode(COMPOUND_STMT);//mid-rule action. Create a new StmtNode of kind Compund_Stmt. 
-				$<nodePtr>$->nSymbolTabPtr = symbolStackTop->symbolTablePtr; //the hashtable with the Symbol Entries
-			   	$<nodePtr>$->nLinenumber = yylineno;			   	//set the line number
-			   }
-		Statements { $<nodePtr>2->children[0] = $3; } // should point to first statement. The others will be its siblings
-		TOK_RBRACE { 
-				leaveScope(); //Statements will be parsed and the actions executed, then the scope ends.
-				$$ = $<nodePtr>2; //set $$ to the second node.
-			   }
-						 
-              | TOK_LBRACE {  
-				$<nodePtr>$ =  new_StmtNode(COMPOUND_STMT); 
-				$<nodePtr>$->nSymbolTabPtr = symbolStackTop->symbolTablePtr;
-			   	$<nodePtr>$->nLinenumber = yylineno;			   	
-			   }
-                Local_Declarations Statements { $<nodePtr>2->children[0] = $4;} // should point to first statement
-                TOK_RBRACE { 
-                		leaveScope();
-                		$$ = $<nodePtr>2;
-                	   }
-;
-
 Local_Declarations : Var_Declaration Local_Declarations {} //Var_Declaration takes care of inserting in symbol table, nothing to do here
 		   | Var_Declaration {}
 ;
@@ -278,7 +256,7 @@ Statements : Statement Statements {
 				     $1->sibling = $2; //for every statement, set its sibling to the rest of the statements
 				     $$ = $1;				    
 				  }
-	   | {$$=NULL}		//when no more statements this is null
+	   | {$$=NULL;}		//when no more statements this is null
 ;
 
 Statement : Expr_Statement  { 
@@ -449,7 +427,7 @@ Simple_Expression : Additive_Expression TOK_GT {
                   	 			$<nodePtr>3->children[1] = $4;
 								$$ = $<nodePtr>3;	
                   	   		     }
-		  | Additive_Expression { $$ = $1 }
+		  | Additive_Expression { $$ = $1; }
 ;
 
 Additive_Expression : Additive_Expression TOK_PLUS {
@@ -502,8 +480,8 @@ Term : Term TOK_MULT {
 ;
 
 Factor : TOK_LPAREN Expression TOK_RPAREN { $$ = $2; }
-       | Var { $$ = $1 }
-       | Call { $$ = $1 }
+       | Var { $$ = $1; }
+       | Call { $$ = $1; }
        | TOK_NUM { 
        			$$ =  new_ExprNode(CONST_EXP);
        			$$->nLinenumber = yylineno;
