@@ -1,3 +1,7 @@
+
+#ifndef _AST
+#define _AST
+
 #include "globals.h"
 #include "symbolTable.h"
 
@@ -33,9 +37,4 @@ AstNodePtr new_StmtNode(StmtKind kind);
 Type* new_type(TypeKind kind);
 
 
-
-
-
-
-
-
+#endif

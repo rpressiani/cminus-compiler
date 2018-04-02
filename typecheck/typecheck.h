@@ -1,4 +1,7 @@
 
+#ifndef _TYPECHECK
+#define _TYPECHECK
+
 #include "symbolTable.h"
 #include "ast.h"
 
@@ -24,5 +27,4 @@ int typecheck_stmt( AstNode *);
 Type *typecheck_expr (AstNode *);
 
 
-
-
+#endif
