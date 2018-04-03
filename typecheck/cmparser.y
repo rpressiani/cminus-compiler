@@ -6,6 +6,7 @@
 #include "ast.h"
 #include "symbolTable.h"
 #include "util.h"
+#include "typecheck.h"
 
 
 /* other external function prototypes */
@@ -130,6 +131,7 @@ Fun_Declaration : Type_Specifier TOK_ID TOK_LPAREN {
 							$<nodePtr>$->nSymbolPtr = symInsert($2,$1,yylineno); //insert it in the symbol table, set the nSymbolPtr
 	 						$<nodePtr>$->nSymbolPtr->stype->function = (Type*) malloc(sizeof(Type)); //allocate the type for the function
 	 						$<nodePtr>$->nSymbolPtr->stype->function->kind = $1->kind; 	//set the kind of the function, i.e. its return type
+	 						$<nodePtr>$->nSymbolPtr->stype->function->function = NULL; 	//set the function field of the return typa as NULL, i.e. no params
 	 						$<nodePtr>$->nSymbolPtr->snode = $<nodePtr>$; 			 //nSymbolPtr->snode must point to the AST node itself
 							$1->kind = FUNCTION; 								//$1->kind is a function.
 	 						enterScope(); 										//create a new scope for the function 
@@ -143,6 +145,19 @@ Fun_Declaration : Type_Specifier TOK_ID TOK_LPAREN {
 				Params TOK_RPAREN     {
 					$<nodePtr>4->children[0] = $5; 	//refer to the previous semantic action node with $<nodePtr>4, 
 													//since it is the fourth component of the rule
+					if ($5)							//params not equal to void
+					{
+						AstNodePtr param = $5;
+						Type* prec = $<nodePtr>4->nSymbolPtr->stype->function;
+
+						while(param->sibling) {
+							prec->function = param->nType;
+
+							prec = prec->function;
+							param = param->sibling;
+						}
+						prec->function = NULL;
+					}
 				} 					//we also need to specify its type. children[0] is represented by Params. 
 				Compound_Stmt { /* changed from Compound_Stmt_Function to Compount_Stmt */
 					$<nodePtr>4->children[1] = $8; 	//Compound Statement. According to the handout, the children[1] should be set to Compund_Stmt.
