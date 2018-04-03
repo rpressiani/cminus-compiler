@@ -3,10 +3,7 @@
 #include "symbolTable.h"
 #include "ast.h"
 
-// Starts typechecking the AST  returns 1 on success
-//use the global variable program
-// 
-int typecheck(){
+void addInputFunc() {
 	Type* input_t = (Type*) malloc(sizeof(Type));
 	input_t->kind = FUNCTION;
 
@@ -22,7 +19,9 @@ int typecheck(){
 	input_t->function->function = in_param1;
 
 	symInsert("input", input_t, 0);
+}
 
+void addOutputFunc() {
 	Type* output_t = (Type*) malloc(sizeof(Type));
 	output_t->kind = FUNCTION;
 
@@ -38,9 +37,17 @@ int typecheck(){
 	output_t->function->function = out_param1;
 
 	symInsert("output", output_t, 0);
+}
+
+// Starts typechecking the AST  returns 1 on success
+//use the global variable program
+// 
+int typecheck(){
+	addInputFunc();
+	addOutputFunc();
 
 	return 1;
-};
+}
 
 // compares two types and returns the resulting type
 // from the comparison
@@ -73,7 +80,3 @@ void printMethodType(Type* t) {
 	}
 	printf("\n");
 }
-
-
-
-
