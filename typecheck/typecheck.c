@@ -66,10 +66,11 @@ Type *typecheck_expr (AstNode *node_){
 
 void printMethodType(Type* t) {
 
-	printf("%u\n", t->kind);
+	printf("RET: %u\n", t->kind);
 	printf("-----\n");
-	while(t->function != NULL) {
-		printf("%u\n", t->function->kind);
+	t = t->function;
+	while(t) {
+		printf("%u\n", t->kind);
 		t = t->function;
 		printf("-----\n");
 	}
