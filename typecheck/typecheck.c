@@ -9,14 +9,9 @@ void addInputFunc() {
 
 	Type* in_return = (Type*) malloc(sizeof(Type));
 	in_return->kind = INT;
+	in_return->function = NULL;
 
 	input_t->function = in_return;
-
-	Type* in_param1 = (Type*) malloc(sizeof(Type));
-	in_param1->kind = VOID;
-	in_param1->function = NULL;
-
-	input_t->function->function = in_param1;
 
 	symInsert("input", input_t, 0);
 }
