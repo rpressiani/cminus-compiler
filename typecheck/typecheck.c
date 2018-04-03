@@ -1,4 +1,5 @@
 
+#include "typecheck.h"
 #include "symbolTable.h"
 #include "ast.h"
 
@@ -6,6 +7,39 @@
 //use the global variable program
 // 
 int typecheck(){
+	Type* input_t = (Type*) malloc(sizeof(Type));
+	input_t->kind = FUNCTION;
+
+	Type* in_return = (Type*) malloc(sizeof(Type));
+	in_return->kind = INT;
+
+	input_t->function = in_return;
+
+	Type* in_param1 = (Type*) malloc(sizeof(Type));
+	in_param1->kind = VOID;
+	in_param1->function = NULL;
+
+	input_t->function->function = in_param1;
+
+	symInsert("input", input_t, 0);
+
+	Type* output_t = (Type*) malloc(sizeof(Type));
+	output_t->kind = FUNCTION;
+
+	Type* out_return = (Type*) malloc(sizeof(Type));
+	out_return->kind = VOID;
+
+	output_t->function = out_return;
+
+	Type* out_param1 = (Type*) malloc(sizeof(Type));
+	out_param1->kind = INT;
+	out_param1->function = NULL;
+
+	output_t->function->function = out_param1;
+
+	symInsert("output", output_t, 0);
+
+	return 1;
 };
 
 // compares two types and returns the resulting type
@@ -26,6 +60,18 @@ int typecheck_stmt( AstNode *node_){
 // 
 
 Type *typecheck_expr (AstNode *node_){
+}
+
+void printMethodType(Type* t) {
+
+	printf("%u\n", t->kind);
+	printf("-----\n");
+	while(t->function != NULL) {
+		printf("%u\n", t->function->kind);
+		t = t->function;
+		printf("-----\n");
+	}
+	printf("\n");
 }
 
 
