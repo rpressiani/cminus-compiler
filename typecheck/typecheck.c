@@ -61,7 +61,7 @@ int typecheck(){
 // from the comparison
 
 Type* type_equiv(Type *t1, Type *t2){
-	if (t1->kind == t2->kind) {
+	if (t1 && t2 && t1->kind == t2->kind) {
 		return t1;
 	} else {
 		return NULL;
@@ -112,7 +112,6 @@ int typecheck_stmt( AstNode *node_, AstNode* method){
 
 // Type checks a given expression and returns its type
 Type *typecheck_expr (AstNode *node_){
-	Type* type = (Type*) malloc(sizeof(Type));
 
 	switch(node_->eKind) {
 		case VAR_EXP:
@@ -123,11 +122,11 @@ Type *typecheck_expr (AstNode *node_){
 		case DIV_EXP:
 		case EQ_EXP:
 		case NE_EXP:
-			return type_equiv(typecheck_expr(node_->children[0]), typecheck_expr(node_->children[1]));
 		case GT_EXP:
 		case LT_EXP:
 		case GE_EXP:
-		case LE_EXP:
+		case LE_EXP: {
+			Type* type = (Type*) malloc(sizeof(Type));
 			type->kind = INT;
 			if (type_equiv(typecheck_expr(node_->children[0]), type) &&
 				type_equiv(typecheck_expr(node_->children[1]), type)) {
@@ -135,9 +134,34 @@ Type *typecheck_expr (AstNode *node_){
 			} else {
 				return NULL;
 			}
-		case CONST_EXP:
+		}
+		case CALL_EXP: {
+			ElementPtr func = symLookup(node_->fname);
+
+			if (func->stype->kind != FUNCTION) return NULL;
+
+			if (func->stype->function->function != NULL) {
+				AstNode* arg = node_->children[0];
+				Type* formalvar = func->stype->function->function;
+
+				while(formalvar) {
+					if (!arg) return NULL;
+					if (type_equiv(typecheck_expr(arg), formalvar)) {
+						arg = arg->sibling;
+						formalvar = formalvar->function;
+						continue;
+					} else {
+						return NULL;
+					}
+				}
+			}
+			return func->stype->function;
+		}
+		case CONST_EXP: {
+			Type* type = (Type*) malloc(sizeof(Type));
 			type->kind = INT;
 			return type;
+		}
 		default:
 			return NULL;
 	}
