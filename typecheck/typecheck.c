@@ -6,34 +6,43 @@
 extern AstNode *program;
 
 void addInputFunc() {
-	Type* input_t = (Type*) malloc(sizeof(Type));
-	input_t->kind = FUNCTION;
+	if (!symLookup("input")) {
+		Type* input_t = (Type*) malloc(sizeof(Type));
+		input_t->kind = FUNCTION;
 
-	Type* in_return = (Type*) malloc(sizeof(Type));
-	in_return->kind = INT;
-	in_return->function = NULL;
+		Type* in_return = (Type*) malloc(sizeof(Type));
+		in_return->kind = INT;
+		in_return->function = NULL;
 
-	input_t->function = in_return;
+		input_t->function = in_return;
 
-	symInsert("input", input_t, 0);
+		symInsert("input", input_t, 0);
+	} else {
+		printf("input function already declared\n");
+	}
+	
 }
 
 void addOutputFunc() {
-	Type* output_t = (Type*) malloc(sizeof(Type));
-	output_t->kind = FUNCTION;
+	if (!symLookup("output")) {
+		Type* output_t = (Type*) malloc(sizeof(Type));
+		output_t->kind = FUNCTION;
 
-	Type* out_return = (Type*) malloc(sizeof(Type));
-	out_return->kind = VOID;
+		Type* out_return = (Type*) malloc(sizeof(Type));
+		out_return->kind = VOID;
 
-	output_t->function = out_return;
+		output_t->function = out_return;
 
-	Type* out_param1 = (Type*) malloc(sizeof(Type));
-	out_param1->kind = INT;
-	out_param1->function = NULL;
+		Type* out_param1 = (Type*) malloc(sizeof(Type));
+		out_param1->kind = INT;
+		out_param1->function = NULL;
 
-	output_t->function->function = out_param1;
+		output_t->function->function = out_param1;
 
-	symInsert("output", output_t, 0);
+		symInsert("output", output_t, 0);
+	} else {
+		printf("output function already declared\n");
+	}
 }
 
 // Starts typechecking the AST  returns 1 on success
