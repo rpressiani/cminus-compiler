@@ -3,6 +3,8 @@
 #include "symbolTable.h"
 #include "ast.h"
 
+extern AstNode *program;
+
 void addInputFunc() {
 	Type* input_t = (Type*) malloc(sizeof(Type));
 	input_t->kind = FUNCTION;
@@ -104,6 +106,26 @@ Type *typecheck_expr (AstNode *node_){
 	Type* type = (Type*) malloc(sizeof(Type));
 
 	switch(node_->eKind) {
+		case VAR_EXP:
+			return node_->nSymbolPtr->stype;
+		case ADD_EXP:
+		case SUB_EXP:
+		case MULT_EXP:
+		case DIV_EXP:
+		case EQ_EXP:
+		case NE_EXP:
+			return type_equiv(typecheck_expr(node_->children[0]), typecheck_expr(node_->children[1]));
+		case GT_EXP:
+		case LT_EXP:
+		case GE_EXP:
+		case LE_EXP:
+			type->kind = INT;
+			if (type_equiv(typecheck_expr(node_->children[0]), type) &&
+				type_equiv(typecheck_expr(node_->children[1]), type)) {
+				return type;
+			} else {
+				return NULL;
+			}
 		case CONST_EXP:
 			type->kind = INT;
 			return type;
