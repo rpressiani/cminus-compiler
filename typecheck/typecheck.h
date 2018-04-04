@@ -19,7 +19,7 @@ Type* type_equiv(Type *, Type *);
 int typecheck_method(AstNode *);
 
 // Typechecks a statement and returns 1 on success
-int typecheck_stmt( AstNode *);
+int typecheck_stmt( AstNode *, AstNode*);
 
 // Type checks a given expression and returns its type
 // 

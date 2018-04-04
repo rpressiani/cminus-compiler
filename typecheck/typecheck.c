@@ -41,27 +41,75 @@ int typecheck(){
 	addInputFunc();
 	addOutputFunc();
 
-	return 1;
+	if(!program) return 0;
+
+	return typecheck_method(program);
 }
 
 // compares two types and returns the resulting type
 // from the comparison
 
 Type* type_equiv(Type *t1, Type *t2){
+	if (t1->kind == t2->kind) {
+		return t1;
+	} else {
+		return NULL;
+	}
 }
 
 // Typechecks a method and returns 1 on success
 int typecheck_method(AstNode *node_){
+	if (!node_) return 1;
+
+	int pass = 1;
+	if (!typecheck_stmt(node_->children[1]->children[0], node_)) pass = 0;
+
+	return pass && typecheck_method(node_->sibling);
+
 }
 
 // Typechecks a statement and returns 1 on success
-int typecheck_stmt( AstNode *node_){
+int typecheck_stmt( AstNode *node_, AstNode* method){
+	if (!node_) return 1;
+
+	int pass = 1;
+
+	switch(node_->sKind) {
+		case RETURN_STMT:
+			if (!node_->children[0]) {	// return ;
+				if (method->nType->function->kind == VOID) {
+					break;
+				} else {
+					pass = 0;
+					printf("[ERROR] Line %d\n", node_->nLinenumber);
+				}
+			} else {							// return e;
+				if (type_equiv(typecheck_expr(node_->children[0]), method->nType->function)) {
+					break;
+				} else {
+					pass = 0;
+					printf("[ERROR] Line %d\n", node_->nLinenumber);
+				}
+			}
+			break;
+		default:
+			break;
+	}
+
+	return pass && typecheck_stmt(node_->sibling, method);
 }
 
 // Type checks a given expression and returns its type
-// 
-
 Type *typecheck_expr (AstNode *node_){
+	Type* type = (Type*) malloc(sizeof(Type));
+
+	switch(node_->eKind) {
+		case CONST_EXP:
+			type->kind = INT;
+			return type;
+		default:
+			return NULL;
+	}
 }
 
 void printMethodType(Type* t) {

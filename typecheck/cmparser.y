@@ -562,7 +562,9 @@ int main(int argc, char **argv){
 #else
     initSymbolTable(); 	
     yyparse();
+    printf("TYPECHECK: %d\n", typecheck(program));
     print_Ast();
+
 #endif
     
 } 
