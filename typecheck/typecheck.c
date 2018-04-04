@@ -147,7 +147,7 @@ Type *typecheck_expr (AstNode *node_){
 			}
 		}
 		case CALL_EXP: {
-			ElementPtr func = symLookup(node_->fname);
+			ElementPtr func = node_->nSymbolPtr;
 
 			if (func->stype->kind != FUNCTION) return NULL;
 
