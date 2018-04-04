@@ -116,6 +116,17 @@ Type *typecheck_expr (AstNode *node_){
 	switch(node_->eKind) {
 		case VAR_EXP:
 			return node_->nSymbolPtr->stype;
+		case ARRAY_EXP: {
+			if (node_->nSymbolPtr->stype->kind == ARRAY) {
+				Type* expr = typecheck_expr(node_->children[0]);
+				if (expr && expr->kind == INT) {
+					Type* type = (Type*) malloc(sizeof(Type));
+					type->kind = INT;
+					return type;
+				}
+			}
+			return NULL;
+		}
 		case ADD_EXP:
 		case SUB_EXP:
 		case MULT_EXP:
