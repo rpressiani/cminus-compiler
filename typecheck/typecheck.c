@@ -66,7 +66,7 @@ int typecheck_method(AstNode *node_){
 	int pass = 1;
 	if (!typecheck_stmt(node_->children[1]->children[0], node_)) pass = 0;
 
-	return pass && typecheck_method(node_->sibling);
+	return typecheck_method(node_->sibling) && pass;
 
 }
 
@@ -98,7 +98,7 @@ int typecheck_stmt( AstNode *node_, AstNode* method){
 			break;
 	}
 
-	return pass && typecheck_stmt(node_->sibling, method);
+	return typecheck_stmt(node_->sibling, method) && pass;
 }
 
 // Type checks a given expression and returns its type
