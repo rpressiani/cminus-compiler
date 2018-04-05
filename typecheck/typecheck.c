@@ -82,6 +82,13 @@ int typecheck_method(AstNode *node_){
 int typecheck_stmt( AstNode *node_, AstNode* method){
 	if (!node_) return 1;
 
+	if ((node_->sKind != COMPOUND_STMT && node_->sibling == NULL) || (node_->sKind == COMPOUND_STMT && !node_->children[0]) ) {
+		if (node_->sKind != RETURN_STMT) {
+			printf("[ERROR] Line %d: control reaches end of non-void function\n", node_->nLinenumber);
+			return 0;
+		}
+	}
+
 	int pass = 1;
 
 	switch(node_->sKind) {
@@ -130,8 +137,6 @@ int typecheck_stmt( AstNode *node_, AstNode* method){
 				pass = 0;
 				printf("[ERROR] Line %d\n", node_->nLinenumber);
 			}
-		default:
-			break;
 	}
 
 	return typecheck_stmt(node_->sibling, method) && pass;
