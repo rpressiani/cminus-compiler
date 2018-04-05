@@ -5,6 +5,8 @@
 
 extern AstNode *program;
 
+void error(char const *s, int lineno);
+
 void addInputFunc() {
 	if (!symLookup("input")) {
 		Type* input_t = (Type*) malloc(sizeof(Type));
@@ -187,7 +189,12 @@ Type *typecheck_expr (AstNode *node_){
 			
 			ElementPtr func = node_->nSymbolPtr;
 			
-			if (!func) return NULL;
+			if (!func) {
+				char *msg;
+            	asprintf(&msg, "no definition for '%s' found", node_->fname);
+				error(msg, node_->nLinenumber);
+				return NULL;
+			}
 
 			if (func->stype->kind != FUNCTION) return NULL;
 
@@ -217,6 +224,10 @@ Type *typecheck_expr (AstNode *node_){
 			return type;
 		}
 	}
+}
+
+void error(char const *s, int lineno) {
+	fprintf(stderr, "Error at line %d: %s\n", lineno, s);
 }
 
 void printMethodType(Type* t) {
