@@ -81,8 +81,8 @@ int typecheck_method(AstNode *node_){
 // Typechecks a statement and returns 1 on success
 int typecheck_stmt( AstNode *node_, AstNode* method){
 	if (!node_) return 1;
-
-	if ((node_->sKind != COMPOUND_STMT && node_->sibling == NULL) || (node_->sKind == COMPOUND_STMT && !node_->children[0]) ) {
+	
+	if (method->nType->function->kind != VOID && ((node_->sKind != COMPOUND_STMT && node_->sibling == NULL) || (node_->sKind == COMPOUND_STMT && !node_->children[0])) ) {
 		if (node_->sKind != RETURN_STMT) {
 			printf("[ERROR] Line %d: control reaches end of non-void function\n", node_->nLinenumber);
 			return 0;
