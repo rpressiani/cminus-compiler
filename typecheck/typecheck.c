@@ -73,11 +73,9 @@ int typecheck_method(AstNode *node_){
 	if (!node_) return 1;
 
 	int pass = 1;
-	// MOVE CMPD_STMT IN TYPECHECK_STMT
-	if (!typecheck_stmt(node_->children[1]->children[0], node_)) pass = 0;
+	if (!typecheck_stmt(node_->children[1], node_)) pass = 0;
 
 	return typecheck_method(node_->sibling) && pass;
-
 }
 
 // Typechecks a statement and returns 1 on success
@@ -121,6 +119,9 @@ int typecheck_stmt( AstNode *node_, AstNode* method){
 					printf("[ERROR] Line %d\n", node_->nLinenumber);
 				}
 			}
+			break;
+		case COMPOUND_STMT:
+			if (node_->children[0] && !typecheck_stmt(node_->children[0], method)) pass = 0;
 			break;
 		case EXPRESSION_STMT:
 			if (!node_->children[0] || (node_->children[0] && typecheck_expr(node_->children[0]))) { 		// ;
