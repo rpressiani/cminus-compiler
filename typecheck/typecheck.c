@@ -202,6 +202,9 @@ Type *typecheck_expr (AstNode *node_){
 						return NULL;
 					}
 				}
+				if (arg) {
+					return NULL;
+				}
 			}
 			return func->stype->function;
 		}
