@@ -96,6 +96,15 @@ int typecheck_stmt( AstNode *node_, AstNode* method){
 				pass = 0;
 			}
 			break;
+		case WHILE_STMT:
+			if (typecheck_expr(node_->children[0])->kind != INT) {
+				pass = 0;
+				printf("[ERROR] Line %d\n", node_->nLinenumber);
+			}
+			if (typecheck_stmt(node_->children[1], method) == 0) {
+				pass = 0;
+			}
+			break;
 		case RETURN_STMT:
 			if (!node_->children[0]) {	// return ;
 				if (method->nType->function->kind == VOID) {
