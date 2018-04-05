@@ -73,6 +73,7 @@ int typecheck_method(AstNode *node_){
 	if (!node_) return 1;
 
 	int pass = 1;
+	// MOVE CMPD_STMT IN TYPECHECK_STMT
 	if (!typecheck_stmt(node_->children[1]->children[0], node_)) pass = 0;
 
 	return typecheck_method(node_->sibling) && pass;
@@ -103,6 +104,13 @@ int typecheck_stmt( AstNode *node_, AstNode* method){
 				}
 			}
 			break;
+		case EXPRESSION_STMT:
+			if (!node_->children[0] || (node_->children[0] && typecheck_expr(node_->children[0]))) { 		// ;
+				break;
+			} else {
+				pass = 0;
+				printf("[ERROR] Line %d\n", node_->nLinenumber);
+			}
 		default:
 			break;
 	}
@@ -127,6 +135,11 @@ Type *typecheck_expr (AstNode *node_){
 			}
 			return NULL;
 		}
+		case ASSI_EXP:
+			if (node_->children[0]->eKind == VAR_EXP || node_->children[0]->eKind == ARRAY_EXP) {
+				return type_equiv(typecheck_expr(node_->children[0]), typecheck_expr(node_->children[1]));
+			}
+			return NULL;
 		case ADD_EXP:
 		case SUB_EXP:
 		case MULT_EXP:
@@ -173,8 +186,6 @@ Type *typecheck_expr (AstNode *node_){
 			type->kind = INT;
 			return type;
 		}
-		default:
-			return NULL;
 	}
 }
 
