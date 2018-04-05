@@ -92,8 +92,9 @@ int typecheck_stmt( AstNode *node_, AstNode* method){
 	int pass = 1;
 
 	switch(node_->sKind) {
-		case IF_THEN_ELSE_STMT:
-			if (typecheck_expr(node_->children[0])->kind != INT) {
+		case IF_THEN_ELSE_STMT: {
+			Type *exprType = typecheck_expr(node_->children[0]);
+			if (!exprType || exprType->kind != INT) {
 				pass = 0;
 				printf("[ERROR] Line %d\n", node_->nLinenumber);
 			}
