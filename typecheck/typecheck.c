@@ -98,9 +98,7 @@ int typecheck_stmt( AstNode *node_, AstNode* method){
 				pass = 0;
 				printf("[ERROR] Line %d\n", node_->nLinenumber);
 			}
-			if (typecheck_stmt(node_->children[1], method) == 0 || typecheck_stmt(node_->children[2], method) == 0) {
-				pass = 0;
-			}
+			if (typecheck_stmt(node_->children[1], method) == 0 || typecheck_stmt(node_->children[2], method) == 0) pass = 0;
 			break;
 		}
 		case WHILE_STMT: {
@@ -109,9 +107,7 @@ int typecheck_stmt( AstNode *node_, AstNode* method){
 				pass = 0;
 				printf("[ERROR] Line %d\n", node_->nLinenumber);
 			}
-			if (typecheck_stmt(node_->children[1], method) == 0) {
-				pass = 0;
-			}
+			if (typecheck_stmt(node_->children[1], method) == 0) pass = 0;
 			break;
 		}
 		case RETURN_STMT:
