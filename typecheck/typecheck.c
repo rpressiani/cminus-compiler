@@ -98,7 +98,6 @@ int typecheck_stmt( AstNode *node_, AstNode* method){
 			Type *exprType = typecheck_expr(node_->children[0]);
 			if (!exprType || exprType->kind != INT) {
 				pass = 0;
-				printf("[ERROR] Line %d\n", node_->nLinenumber);
 			}
 			if (exprType && exprType->kind != INT) {
 				error("integer expression expected", node_->children[0]->nLinenumber);
@@ -110,7 +109,6 @@ int typecheck_stmt( AstNode *node_, AstNode* method){
 			Type *exprType = typecheck_expr(node_->children[0]);
 			if (!exprType || exprType->kind != INT) {
 				pass = 0;
-				printf("[ERROR] Line %d\n", node_->nLinenumber);
 			}
 			if (exprType && exprType->kind != INT) {
 				error("integer expression expected", node_->children[0]->nLinenumber);
@@ -124,16 +122,18 @@ int typecheck_stmt( AstNode *node_, AstNode* method){
 					break;
 				} else {
 					pass = 0;
-					// TODO Add message
-					printf("[ERROR] Line %d\n", node_->nLinenumber);
+					char *msg;
+	            	asprintf(&msg, "non-void function '%s' should return a value", method->nSymbolPtr->id);
+					error(msg, node_->nLinenumber);
 				}
 			} else {							// return e;
 				if (type_equiv(typecheck_expr(node_->children[0]), method->nType->function)) {
 					break;
 				} else {
 					pass = 0;
-					// TODO Add message
-					printf("[ERROR] Line %d\n", node_->nLinenumber);
+					char *msg;
+	            	asprintf(&msg, "void function '%s' should not return a value", method->nSymbolPtr->id);
+					error(msg, node_->nLinenumber);
 				}
 			}
 			break;
@@ -145,7 +145,6 @@ int typecheck_stmt( AstNode *node_, AstNode* method){
 				break;
 			} else {
 				pass = 0;
-				printf("[ERROR] Line %d\n", node_->nLinenumber);
 			}
 	}
 
