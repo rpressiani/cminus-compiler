@@ -222,8 +222,9 @@ Type *typecheck_expr (AstNode *node_){
 				return NULL;
 			}
 
+			AstNode* arg = node_->children[0];
+
 			if (func->stype->function->function != NULL) {
-				AstNode* arg = node_->children[0];
 				Type* formalvar = func->stype->function->function;
 
 				while(formalvar) {
@@ -240,6 +241,11 @@ Type *typecheck_expr (AstNode *node_){
 						return NULL;
 					}
 				}
+				if (arg) {
+					error("too many arguments to function call", node_->nLinenumber);
+					return NULL;
+				}
+			} else {
 				if (arg) {
 					error("too many arguments to function call", node_->nLinenumber);
 					return NULL;
