@@ -26,7 +26,5 @@ int typecheck_stmt( AstNode *, AstNode*);
 
 Type *typecheck_expr (AstNode *);
 
-void printMethodType(Type*);
-
 
 #endif

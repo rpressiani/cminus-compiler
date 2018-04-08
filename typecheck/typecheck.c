@@ -269,16 +269,3 @@ Type *typecheck_expr (AstNode *node_){
 void error(char const *s, int lineno) {
 	fprintf(stderr, "Error at line %d: %s\n", lineno, s);
 }
-
-void printMethodType(Type* t) {
-
-	printf("RET: %u\n", t->kind);
-	printf("-----\n");
-	t = t->function;
-	while(t) {
-		printf("%u\n", t->kind);
-		t = t->function;
-		printf("-----\n");
-	}
-	printf("\n");
-}
