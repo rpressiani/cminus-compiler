@@ -166,9 +166,14 @@ Type *typecheck_expr (AstNode *node_){
 					Type* type = (Type*) malloc(sizeof(Type));
 					type->kind = INT;
 					return type;
+				} else {
+					error("array index must be integer", node_->nLinenumber);
+					return NULL;
 				}
 			}
-			error("array index must be integer", node_->nLinenumber);
+			char *msg;
+        	asprintf(&msg, "variable '%s' is not an array", node_->nSymbolPtr->id);
+			error(msg, node_->nLinenumber);
 			return NULL;
 		}
 		case ASSI_EXP:
