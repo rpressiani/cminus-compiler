@@ -5,6 +5,10 @@
 
 extern AstNode *program;
 
+AstNode * currentStmt;
+static uint8_t cmpd_level = 0;
+static uint8_t last_ret;
+
 void error(char const *s, int lineno);
 
 void addInputFunc() {
@@ -77,19 +81,18 @@ int typecheck_method(AstNode *node_){
 	int pass = 1;
 	if (!typecheck_stmt(node_->children[1], node_)) pass = 0;
 
+	if (node_->nSymbolPtr->stype->function->kind != VOID && (currentStmt->sKind != RETURN_STMT || last_ret > 1)) {
+		error("control reaches end of non-void function", node_->nLinenumber);
+		pass = 0;
+	}
 	return typecheck_method(node_->sibling) && pass;
 }
 
 // Typechecks a statement and returns 1 on success
 int typecheck_stmt( AstNode *node_, AstNode* method){
 	if (!node_) return 1;
-	
-	// If non-void function, last statement must be a RETURN_STMT
-	// If sibling == NULL, but statement is COMPOUNT_STMT, proceed only if COMPOUND_STMT is not empty
-	if (method->nType->function->kind != VOID && !node_->sibling && (node_->sKind != COMPOUND_STMT || !node_->children[0]) && node_->sKind != RETURN_STMT) {
-		error("control reaches end of non-void function", node_->nLinenumber);
-		return 0;
-	}
+
+	currentStmt = node_;
 
 	int pass = 1;
 
@@ -118,27 +121,26 @@ int typecheck_stmt( AstNode *node_, AstNode* method){
 		}
 		case RETURN_STMT:
 			if (!node_->children[0]) {	// return ;
-				if (method->nType->function->kind == VOID) {
-					break;
-				} else {
+				if (method->nType->function->kind != VOID) {
 					pass = 0;
 					char *msg;
 	            	asprintf(&msg, "non-void function '%s' should return a value", method->nSymbolPtr->id);
 					error(msg, node_->nLinenumber);
 				}
 			} else {							// return e;
-				if (type_equiv(typecheck_expr(node_->children[0]), method->nType->function)) {
-					break;
-				} else {
+				if (!type_equiv(typecheck_expr(node_->children[0]), method->nType->function)) {
 					pass = 0;
 					char *msg;
 	            	asprintf(&msg, "void function '%s' should not return a value", method->nSymbolPtr->id);
 					error(msg, node_->nLinenumber);
 				}
 			}
+			last_ret = cmpd_level;
 			break;
 		case COMPOUND_STMT:
+			cmpd_level++;
 			if (node_->children[0] && !typecheck_stmt(node_->children[0], method)) pass = 0;
+			cmpd_level--;
 			break;
 		case EXPRESSION_STMT:
 			if (!node_->children[0] || (node_->children[0] && typecheck_expr(node_->children[0]))) { 		// ;
