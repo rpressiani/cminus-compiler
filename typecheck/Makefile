@@ -56,7 +56,8 @@ cmlexer.c: cmlexer.l
 	$(LEX)  -ocmlexer.c cmlexer.l 
 
 clean:
-	$(RM) $(PROGRAM) $(OBJECTS) $(CTEMPS) 
+	$(RM) -rf $(BINDIR)
+	$(RM) $(OBJECTS) $(CTEMPS) 
 
 #example only
 #submit:
