@@ -206,10 +206,13 @@ Type *typecheck_expr (AstNode *node_){
 			ElementPtr func = node_->nSymbolPtr;
 			
 			if (!func) {
-				char *msg;
-            	asprintf(&msg, "no definition for '%s' found", node_->fname);
-				error(msg, node_->nLinenumber);
-				return NULL;
+				func = symLookup(node_->fname);
+				if (!func) {
+					char *msg;
+	            	asprintf(&msg, "no definition for '%s' found", node_->fname);
+					error(msg, node_->nLinenumber);
+					return NULL;
+				}
 			}
 
 			if (func->stype->kind != FUNCTION) {
