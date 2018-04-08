@@ -59,5 +59,4 @@ ElementPtr		symInsert(char *, Type *, int );
 void			enterScope();
 void			leaveScope();
 
-
 #endif

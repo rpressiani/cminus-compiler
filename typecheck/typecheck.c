@@ -6,8 +6,8 @@
 extern AstNode *program;
 
 AstNode * currentStmt;
-static uint8_t cmpd_level = 0;
-static uint8_t last_ret;
+int cmpd_level = 0;
+int last_ret;
 
 void error(char const *s, int lineno);
 
