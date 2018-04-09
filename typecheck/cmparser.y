@@ -8,8 +8,6 @@
 #include "util.h"
 #include "typecheck.h"
 
-#define VERBOSE 0
-
 /* other external function prototypes */
 extern int yylex();
 extern int initLex(int ,  char **);
@@ -152,7 +150,6 @@ Fun_Declaration : Type_Specifier TOK_ID TOK_LPAREN {
 						Type* prec = $<nodePtr>4->nSymbolPtr->stype->function;
 
 						while(param) {
-							if(VERBOSE) printf("%s\n", param->nSymbolPtr->id);	//param ID
 							prec->function = param->nType;
 
 							prec = prec->function;
@@ -165,9 +162,6 @@ Fun_Declaration : Type_Specifier TOK_ID TOK_LPAREN {
 				Compound_Stmt { /* changed from Compound_Stmt_Function to Compount_Stmt */
 					$<nodePtr>4->children[1] = $8; 	//Compound Statement. According to the handout, the children[1] should be set to Compund_Stmt.
 					$$ = $<nodePtr>4; //this is the last action, $$, i.e. Fun_Declaration is set to the node created in the first semantic action, which represents
-
-					if(VERBOSE) printf("***** %s *****\n", $2);
-					if(VERBOSE) printMethodType($<nodePtr>4->nType->function);
 
 					leaveScope(); /* added to pop off the scope entered earlier in Fun_Declaration */
 				}  	 	  		       	     
