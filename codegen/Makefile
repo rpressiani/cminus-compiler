@@ -18,9 +18,9 @@ BINDIR=bin
 _PROGRAM=cmparser
 PROGRAM=$(patsubst %,$(BINDIR)/%,$(_PROGRAM))
 
-OBJECTS=cmparser.o cmlexer.o symbolTable.o ast.o util.o typecheck.o
+OBJECTS=cmparser.o cmlexer.o symbolTable.o ast.o util.o typecheck.o codegen.o
 
-SOURCES=cmlexer.l cmparser.y symbolTable.c ast.c util.c typecheck.c
+SOURCES=cmlexer.l cmparser.y symbolTable.c ast.c util.c typecheck.c codegen.c
 
 CTEMPS=cmlexer.c cmparser.c cmparser.tab.h cmparser.tab.c cmparser.output
 
