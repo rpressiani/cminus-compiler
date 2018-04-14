@@ -56,4 +56,4 @@ bin
 cmlexer.c
 *.tab.*
 cmparser.c
-
+*.output
