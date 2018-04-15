@@ -80,7 +80,7 @@ void code_gen_expr(AstNode *expr){
     }
 }
 
-void code_gen_localVarDecl(SymbolTablePtr scope) {
+int code_gen_localVarDecl(SymbolTablePtr scope) {
     int nVar = 0;
 
     ElementPtr symelement = scope->queue;
@@ -107,6 +107,8 @@ void code_gen_localVarDecl(SymbolTablePtr scope) {
 
     asprintf(&instr, "subu $sp, $sp, %d", nVar*4);
     emit(instr);
+
+    return nVar;
 }
 
 void code_gen_stmt(AstNode *stmt){
@@ -119,11 +121,18 @@ void code_gen_stmt(AstNode *stmt){
             break;
         case RETURN_STMT:
             break;
-        case COMPOUND_STMT:
-            if(stmt->nSymbolTabPtr != NULL) code_gen_localVarDecl(stmt->nSymbolTabPtr);
+        case COMPOUND_STMT: {
+            int nVar = 0;
+            if(stmt->nSymbolTabPtr != NULL) nVar = code_gen_localVarDecl(stmt->nSymbolTabPtr);
             // codegen first statement
             if(stmt->children[0] != NULL) code_gen_stmt(stmt->children[0]);
+            // adjust the stack back
+            if (nVar > 0) {
+                asprintf(&instr, "addu  $sp, $sp, %d", nVar*4);
+                emit(instr);
+            }
             break;
+        }
         case EXPRESSION_STMT:
             code_gen_expr(stmt->children[0]);
             break;
@@ -166,6 +175,14 @@ void codegen_helper(AstNode *root) {
             emit("addiu $fp, $sp, 4");
 
             codegen_helper(root->children[1]); // body of the method
+            //restore values of $ra and $fp
+            emit("lw $ra, -4($fp)");
+            emit("lw $fp, 0($fp)");
+            //adjust the stack once more for $fp and $ra
+            emit("addu $sp, $sp, 8");
+            //back to caller
+            emit("jr $ra");
+
             codegen_helper(root->sibling); // codegen next method
             break;
         case FORMALVAR:
