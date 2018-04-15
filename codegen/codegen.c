@@ -19,6 +19,15 @@ char *gen_new_label(){
     return NULL;
 }
 
+void code_gen_binary_expr(AstNode *expr) {
+    code_gen_expr(expr->children[0]);
+    emit("subu $sp, $sp, 4");
+    emit("sw $v0, 0($sp)");
+    code_gen_expr(expr->children[1]);
+    emit("lw $v1, 0($sp)");
+    emit("addu $sp, $sp, 4");
+}
+
 void code_gen_expr(AstNode *expr){
     if(expr == NULL) return;
 
@@ -35,19 +44,20 @@ void code_gen_expr(AstNode *expr){
             emit(instr);
             break;
         case ADD_EXP:
-            code_gen_expr(expr->children[0]);
-            emit("subu $sp, $sp, 4");
-            emit("sw $v0, 0($sp)");
-            code_gen_expr(expr->children[1]);
-            emit("lw $v1, 0($sp)");
-            emit("addu $sp, $sp, 4");
-            emit("addu $v0, $v0, $v1");
+            code_gen_binary_expr(expr);
+            emit("add $v0, $v0, $v1");
             break;
         case SUB_EXP:
+            code_gen_binary_expr(expr);
+            emit("sub $v0, $v0, $v1");
             break;
         case MULT_EXP:
+            code_gen_binary_expr(expr);
+            emit("mul $v0, $v0, $v1");
             break;
         case DIV_EXP:
+            code_gen_binary_expr(expr);
+            emit("divu $v0, $v0, $v1");
             break;
         case GT_EXP:
             break;
