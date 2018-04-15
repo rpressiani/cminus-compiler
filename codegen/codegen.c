@@ -30,6 +30,9 @@ void code_gen_expr(AstNode *expr){
         case ARRAY_EXP:
             break;
         case ASSI_EXP:
+            code_gen_expr(expr->children[1]);
+            asprintf(&instr, "sw $v0, -%d($fp)", expr->children[0]->nSymbolPtr->offset + 4);
+            emit(instr);
             break;
         case ADD_EXP:
             break;
