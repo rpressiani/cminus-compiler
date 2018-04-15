@@ -29,6 +29,7 @@ typedef struct element {
 	struct element	*next;		/* pointer to the next symbol with the				          same hash table index */
   struct node     *snode;   /* (New) AST Node for method declartion */
 	struct element *queue_next; /* (New) Pointer to next element in  queue of  declarared elements  */
+	int offset; /* codegen */
 } Element;
 
 typedef Element	* ElementPtr;

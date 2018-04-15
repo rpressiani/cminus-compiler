@@ -6,6 +6,8 @@
 extern FILE         *outfile;
 extern AstNodePtr   program;
 
+char *instr;
+
 void emit_label(const char *label){
     fprintf(outfile, "%s:\n", label); 
 }
@@ -17,19 +19,56 @@ char *gen_new_label(){
     return NULL;
 }
 
-void code_gen_expr(AstNode *node){
-;
+void code_gen_expr(AstNode *expr){
+    if(expr == NULL) return;
+
+    switch(expr->eKind) {
+        case VAR_EXP:
+            asprintf(&instr, "li $v0, -%d($fp)", expr->nSymbolPtr->offset + 4);
+            emit(instr);
+            break;
+        case ARRAY_EXP:
+            break;
+        case ASSI_EXP:
+            break;
+        case ADD_EXP:
+            break;
+        case SUB_EXP:
+            break;
+        case MULT_EXP:
+            break;
+        case DIV_EXP:
+            break;
+        case GT_EXP:
+            break;
+        case LT_EXP:
+            break;
+        case GE_EXP:
+            break;
+        case LE_EXP:
+            break;
+        case EQ_EXP:
+            break;
+        case NE_EXP:
+            break;
+        case CALL_EXP:
+            break;
+        case CONST_EXP:
+            asprintf(&instr, "li $v0, %d", expr->nValue);
+            emit(instr);
+            break;
+    }
 }
 
 void code_gen_localVarDecl(SymbolTablePtr scope) {
     int nVar = 0;
-    char *instr;
 
     ElementPtr symelement = scope->queue;
     while(symelement) {
         switch(symelement->stype->kind) {
             case INT:
                 nVar++;
+                symelement->offset = nVar*4;
                 break;
             case ARRAY:
                 // TODO
@@ -62,12 +101,14 @@ void code_gen_stmt(AstNode *stmt){
             break;
         case COMPOUND_STMT:
             if(stmt->nSymbolTabPtr != NULL) code_gen_localVarDecl(stmt->nSymbolTabPtr);
-            // Print the first statement
+            // codegen first statement
             if(stmt->children[0] != NULL) code_gen_stmt(stmt->children[0]);
             break;
         case EXPRESSION_STMT:
+            code_gen_expr(stmt->children[0]);
             break;
     }
+    code_gen_stmt(stmt->sibling); // codegen next statement
 }
 
 // void code_gen_method(AstNode *node){
@@ -94,6 +135,8 @@ void printFile(char* filename) {
 }
 
 void codegen_helper(AstNode *root) {
+    if(root == NULL) return;
+    
     switch(root->nKind) {
         case METHOD:
             emit_label(root->nSymbolPtr->id);
@@ -103,7 +146,7 @@ void codegen_helper(AstNode *root) {
             emit("addiu $fp, $sp, 4");
 
             codegen_helper(root->children[1]); // body of the method
-
+            codegen_helper(root->sibling); // codegen next method
             break;
         case FORMALVAR:
             break;
