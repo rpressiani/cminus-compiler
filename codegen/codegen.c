@@ -174,7 +174,14 @@ void codegen_helper(AstNode *root) {
             emit("sw $ra, 0($sp)");
             emit("addiu $fp, $sp, 4");
 
-            codegen_helper(root->children[1]); // body of the method
+            if (strcmp(root->nSymbolPtr->id, "output") && strcmp(root->nSymbolPtr->id, "input")) {
+                codegen_helper(root->children[1]); // body of the method
+            } else if (strcmp(root->nSymbolPtr->id, "output") == 0) {
+                emit("li $v0, 1");
+                emit("lw $a0, 4($fp");
+                emit("syscall");
+            }
+
             //restore values of $ra and $fp
             emit("lw $ra, -4($fp)");
             emit("lw $fp, 0($fp)");
