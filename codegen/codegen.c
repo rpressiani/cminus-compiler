@@ -35,6 +35,13 @@ void code_gen_expr(AstNode *expr){
             emit(instr);
             break;
         case ADD_EXP:
+            code_gen_expr(expr->children[0]);
+            emit("subu $sp, $sp, 4");
+            emit("sw $v0, 0($sp)");
+            code_gen_expr(expr->children[1]);
+            emit("lw $v1, 0($sp)");
+            emit("addu $sp, $sp, 4");
+            emit("addu $v0, $v0, $v1");
             break;
         case SUB_EXP:
             break;
