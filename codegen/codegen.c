@@ -25,27 +25,25 @@ void code_gen_localVarDecl(SymbolTablePtr scope) {
     int nVar = 0;
     char *instr;
 
-    for(int i=0; i<MAXHASHSIZE; i++) {
-        ElementPtr symelement = scope->hashTable[i];
-        while(symelement) {
-            switch(symelement->stype->kind) {
-                case INT:
-                    nVar++;
-                    break;
-                case ARRAY:
-                    // TODO
-                    break;
-                // case VOID:
-                //     break;
-                // case FUNCTION:
-                //     break;
-                default:
+    ElementPtr symelement = scope->queue;
+    while(symelement) {
+        switch(symelement->stype->kind) {
+            case INT:
+                nVar++;
+                break;
+            case ARRAY:
                 // TODO
-                    printf("ERROR\n");
-                    break;
-            }
-            symelement = symelement->next; 
+                break;
+            // case VOID:
+            //     break;
+            // case FUNCTION:
+            //     break;
+            default:
+            // TODO
+                printf("ERROR\n");
+                break;
         }
+        symelement = symelement->queue_next; 
     }
 
     asprintf(&instr, "subu $sp, $sp, %d", nVar*4);
