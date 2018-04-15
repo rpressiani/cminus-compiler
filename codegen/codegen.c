@@ -24,7 +24,7 @@ void code_gen_expr(AstNode *expr){
 
     switch(expr->eKind) {
         case VAR_EXP:
-            asprintf(&instr, "li $v0, -%d($fp)", expr->nSymbolPtr->offset + 4);
+            asprintf(&instr, "lw $v0, -%d($fp)", expr->nSymbolPtr->offset + 4);
             emit(instr);
             break;
         case ARRAY_EXP:
