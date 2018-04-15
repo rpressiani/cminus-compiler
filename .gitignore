@@ -57,3 +57,4 @@ cmlexer.c
 *.tab.*
 cmparser.c
 *.output
+*.s

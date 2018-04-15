@@ -6,6 +6,7 @@
 #include "ast.h"
 #include "symbolTable.h"
 #include "util.h"
+#include "codegen.h"
 
 
 /* other external function prototypes */
@@ -544,6 +545,7 @@ int main(int argc, char **argv){
     initSymbolTable(); 	
     yyparse();
     typecheck();
+    codegen();
     
 #endif
     
