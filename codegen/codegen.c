@@ -170,6 +170,13 @@ void code_gen_stmt(AstNode *stmt){
 
     switch(stmt->sKind) {
         case IF_THEN_ELSE_STMT:
+            code_gen_expr(stmt->children[0]);
+            asprintf(&instr, "beq $v0, $zero, endif%d", stmt->nLinenumber);
+            emit(instr);
+            code_gen_stmt(stmt->children[1]);
+            asprintf(&instr, "endif%d", stmt->nLinenumber);
+            emit_label(instr);
+
             break;
         case WHILE_STMT:
             break;
