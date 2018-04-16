@@ -237,8 +237,8 @@ void codegen_helper(AstNode *root) {
                 emit("syscall");
             }
 
-            if (root->nType->function->kind == VOID)
-            {
+            if (root->nType->function->kind == VOID) {
+                // TODO check if return; is present in VOID function
                 //restore values of $ra and $fp
                 emit("lw $ra, -4($fp)");
                 emit("lw $fp, 0($fp)");
