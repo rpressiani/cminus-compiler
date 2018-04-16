@@ -124,7 +124,7 @@ int code_gen_localVarDecl(SymbolTablePtr scope) {
             // case FUNCTION:
             //     break;
             default:
-            // TODO
+                // TODO
                 printf("ERROR\n");
                 break;
         }
@@ -224,6 +224,7 @@ void codegen_helper(AstNode *root) {
             code_gen_stmt(root);
             break;
         case EXPRESSION:
+            // TODO
             break;
         }
 }
@@ -231,6 +232,7 @@ void codegen_helper(AstNode *root) {
 void codegen(){
 
     if (program) {
+        // TODO filname same as source code file
         outfile = fopen("temp.s","w+");
 
         emit(".text");
