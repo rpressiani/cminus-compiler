@@ -68,16 +68,28 @@ void code_gen_expr(AstNode *expr){
             emit("divu $v0, $v0, $v1");
             break;
         case GT_EXP:
+            code_gen_binary_expr(expr);
+            emit("sgt $v0, $v1, $v0");
             break;
         case LT_EXP:
+            code_gen_binary_expr(expr);
+            emit("slt $v0, $v1, $v0");
             break;
         case GE_EXP:
+            code_gen_binary_expr(expr);
+            emit("sge $v0, $v1, $v0");
             break;
         case LE_EXP:
+            code_gen_binary_expr(expr);
+            emit("sle $v0, $v1, $v0");
             break;
         case EQ_EXP:
+            code_gen_binary_expr(expr);
+            emit("seq $v0, $v0, $v1");
             break;
         case NE_EXP:
+            code_gen_binary_expr(expr);
+            emit("sne $v0, $v0, $v1");
             break;
         case CALL_EXP: {
             int nArgs = 0;
