@@ -33,14 +33,22 @@ void code_gen_expr(AstNode *expr){
 
     switch(expr->eKind) {
         case VAR_EXP:
-            asprintf(&instr, "lw $v0, -%d($fp)", expr->nSymbolPtr->offset + 4);
+            if (expr->nSymbolPtr->offset <= 0) {                // LOCAL VAR
+                asprintf(&instr, "lw $v0, -%d($fp)", -(expr->nSymbolPtr->offset) + 4);
+            } else {                                            // ARGUMENT
+                asprintf(&instr, "lw $v0, %d($fp)", expr->nSymbolPtr->offset);
+            }
             emit(instr);
             break;
         case ARRAY_EXP:
             break;
         case ASSI_EXP:
             code_gen_expr(expr->children[1]);
-            asprintf(&instr, "sw $v0, -%d($fp)", expr->children[0]->nSymbolPtr->offset + 4);
+            if (expr->children[0]->nSymbolPtr->offset <= 0) {   // LOCAL VAR
+                asprintf(&instr, "sw $v0, -%d($fp)", -(expr->children[0]->nSymbolPtr->offset) + 4);
+            } else {                                            // ARGUMENT
+                asprintf(&instr, "sw $v0, %d($fp)", expr->children[0]->nSymbolPtr->offset);
+            }
             emit(instr);
             break;
         case ADD_EXP:
@@ -120,7 +128,7 @@ int code_gen_localVarDecl(SymbolTablePtr scope) {
         switch(symelement->stype->kind) {
             case INT:
                 nVar++;
-                symelement->offset = nVar*4;
+                symelement->offset = -(nVar*4);
                 break;
             case ARRAY:
                 // TODO
@@ -207,6 +215,10 @@ void codegen_helper(AstNode *root) {
             emit("addiu $fp, $sp, 4");
 
             if (strcmp(root->nSymbolPtr->id, "output") && strcmp(root->nSymbolPtr->id, "input")) {
+                if(root->children[0]) {
+                    root->children[0]->nSymbolPtr->offset = 4;
+                    codegen_helper(root->children[0]); // codegen parameters of the method
+                }
                 codegen_helper(root->children[1]); // body of the method
             } else if (strcmp(root->nSymbolPtr->id, "output") == 0) {
                 emit("li $v0, 1");
@@ -225,6 +237,10 @@ void codegen_helper(AstNode *root) {
             codegen_helper(root->sibling); // codegen next method
             break;
         case FORMALVAR:
+            if (root->sibling) {
+                root->sibling->nSymbolPtr->offset = root->nSymbolPtr->offset + 4;
+                codegen_helper(root->sibling);
+            }
             break;
         case STMT:
             code_gen_stmt(root);
