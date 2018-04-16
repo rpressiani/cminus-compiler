@@ -160,6 +160,17 @@ void code_gen_stmt(AstNode *stmt){
         case WHILE_STMT:
             break;
         case RETURN_STMT:
+            if (stmt->children[0]) {
+                // Assign the return value to $v0
+                code_gen_expr(stmt->children[0]);
+            }
+            //restore values of $ra and $fp
+            emit("lw $ra, -4($fp)");
+            emit("lw $fp, 0($fp)");
+            //adjust the stack once more for $fp and $ra
+            emit("addu $sp, $sp, 8");
+            //back to caller
+            emit("jr $ra");
             break;
         case COMPOUND_STMT: {
             int nVar = 0;
@@ -226,13 +237,16 @@ void codegen_helper(AstNode *root) {
                 emit("syscall");
             }
 
-            //restore values of $ra and $fp
-            emit("lw $ra, -4($fp)");
-            emit("lw $fp, 0($fp)");
-            //adjust the stack once more for $fp and $ra
-            emit("addu $sp, $sp, 8");
-            //back to caller
-            emit("jr $ra");
+            if (root->nType->function->kind == VOID)
+            {
+                //restore values of $ra and $fp
+                emit("lw $ra, -4($fp)");
+                emit("lw $fp, 0($fp)");
+                //adjust the stack once more for $fp and $ra
+                emit("addu $sp, $sp, 8");
+                //back to caller
+                emit("jr $ra");
+            }
 
             codegen_helper(root->sibling); // codegen next method
             break;
