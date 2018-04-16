@@ -190,6 +190,18 @@ void code_gen_stmt(AstNode *stmt){
 
             break;
         case WHILE_STMT:
+            asprintf(&instr, "beginwhile%d", stmt->nLinenumber);
+            emit_label(instr);
+            emit("# B Exp");
+            codegen_helper(stmt->children[0]);
+            emit("# E Exp");
+            asprintf(&instr, "beq $v0, $zero, endwhile%d", stmt->nLinenumber);
+            emit(instr);
+            code_gen_stmt(stmt->children[1]);
+            asprintf(&instr, "j beginwhile%d", stmt->nLinenumber);
+            emit(instr);
+            asprintf(&instr, "endwhile%d", stmt->nLinenumber);
+            emit_label(instr);
             break;
         case RETURN_STMT:
             if (stmt->children[0]) {
