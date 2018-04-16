@@ -71,8 +71,34 @@ void code_gen_expr(AstNode *expr){
             break;
         case NE_EXP:
             break;
-        case CALL_EXP:
+        case CALL_EXP: {
+            int nArgs = 0;
+            if(expr->children[0] != NULL) {
+                AstNodePtr ptr = expr->children[0];
+                while(ptr) {
+                    nArgs++;
+                    ptr = ptr->sibling;
+                }
+
+                asprintf(&instr, "subu $sp, $sp, %d", nArgs*4);
+                emit(instr);
+
+                int offset = 0;
+                ptr = expr->children[0];
+                while(ptr) {
+                    code_gen_expr(ptr);
+                    asprintf(&instr, "sw $v0, %d($sp)", offset*4);
+                    emit(instr);
+                    offset++;
+                    ptr = ptr->sibling;
+                }
+            }
+            asprintf(&instr, "jal %s", expr->fname);
+            emit(instr);
+            asprintf(&instr, "addu  $sp, $sp, %d", nArgs*4);
+            emit(instr);
             break;
+        }
         case CONST_EXP:
             asprintf(&instr, "li $v0, %d", expr->nValue);
             emit(instr);
@@ -178,7 +204,7 @@ void codegen_helper(AstNode *root) {
                 codegen_helper(root->children[1]); // body of the method
             } else if (strcmp(root->nSymbolPtr->id, "output") == 0) {
                 emit("li $v0, 1");
-                emit("lw $a0, 4($fp");
+                emit("lw $a0, 4($fp)");
                 emit("syscall");
             }
 
