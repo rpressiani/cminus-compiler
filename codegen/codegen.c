@@ -145,8 +145,10 @@ int code_gen_localVarDecl(SymbolTablePtr scope) {
         symelement = symelement->queue_next; 
     }
 
-    asprintf(&instr, "subu $sp, $sp, %d", nVar*4);
-    emit(instr);
+    if(nVar > 0) {
+        asprintf(&instr, "subu $sp, $sp, %d", nVar*4);
+        emit(instr);
+    }
 
     return nVar;
 }
