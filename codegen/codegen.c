@@ -57,7 +57,7 @@ void code_gen_expr(AstNode *expr){
             break;
         case SUB_EXP:
             code_gen_binary_expr(expr);
-            emit("sub $v0, $v0, $v1");
+            emit("sub $v0, $v1, $v0");
             break;
         case MULT_EXP:
             code_gen_binary_expr(expr);
