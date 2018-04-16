@@ -93,7 +93,13 @@ void code_gen_expr(AstNode *expr){
                     ptr = ptr->sibling;
                 }
             }
-            asprintf(&instr, "jal %s", expr->fname);
+
+            if (expr->nSymbolPtr) {
+                asprintf(&instr, "jal %s", expr->nSymbolPtr->id);
+            } else {
+                asprintf(&instr, "jal %s", expr->fname);
+            }
+
             emit(instr);
             asprintf(&instr, "addu  $sp, $sp, %d", nArgs*4);
             emit(instr);
