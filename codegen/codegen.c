@@ -170,7 +170,7 @@ void code_gen_stmt(AstNode *stmt){
 
     switch(stmt->sKind) {
         case IF_THEN_ELSE_STMT:
-            code_gen_expr(stmt->children[0]);
+            codegen_helper(stmt->children[0]);
             if (stmt->children[2]) {
                 asprintf(&instr, "beq $v0, $zero, else%d", stmt->nLinenumber);
             } else {
@@ -194,7 +194,7 @@ void code_gen_stmt(AstNode *stmt){
         case RETURN_STMT:
             if (stmt->children[0]) {
                 // Assign the return value to $v0
-                code_gen_expr(stmt->children[0]);
+                codegen_helper(stmt->children[0]);
             }
             //restore values of $ra and $fp
             emit("lw $ra, -4($fp)");
@@ -217,7 +217,7 @@ void code_gen_stmt(AstNode *stmt){
             break;
         }
         case EXPRESSION_STMT:
-            code_gen_expr(stmt->children[0]);
+            codegen_helper(stmt->children[0]);
             break;
     }
     code_gen_stmt(stmt->sibling); // codegen next statement
@@ -292,7 +292,7 @@ void codegen_helper(AstNode *root) {
             code_gen_stmt(root);
             break;
         case EXPRESSION:
-            // TODO
+            code_gen_expr(root);
             break;
         }
 }
