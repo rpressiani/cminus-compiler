@@ -41,15 +41,63 @@ void code_gen_expr(AstNode *expr){
             emit(instr);
             break;
         case ARRAY_EXP:
+            // store index in v0
+            code_gen_expr(expr->children[0]);
+            // index * 4
+            emit("add $v0, $v0, $v0");
+            emit("add $v0, $v0, $v0");
+            // store array offset in v1
+            asprintf(&instr, "li $v1, %d", -(expr->nSymbolPtr->offset) + 4);
+            emit(instr);
+            // calculate offset of selected cell
+            // if only array (c[4]) on the stack and selected c[1]
+            // c[0] is $fp-16-4 (due to RA register), so
+            // c[1] is $fp-16-4+4, or 16+4 -> 20, 20-4 = 16 -> fp - 16
+            emit("subu $v1, $v1, $v0");
+            // fp-16 (see above)
+            emit("sub $v1, $fp, $v1");
+            // store content of cell in v0
+            emit("lw $v0, 0($v1)");
             break;
         case ASSI_EXP:
-            code_gen_expr(expr->children[1]);
-            if (expr->children[0]->nSymbolPtr->offset <= 0) {   // LOCAL VAR
-                asprintf(&instr, "sw $v0, -%d($fp)", -(expr->children[0]->nSymbolPtr->offset) + 4);
-            } else {                                            // ARGUMENT
-                asprintf(&instr, "sw $v0, %d($fp)", expr->children[0]->nSymbolPtr->offset);
+            if (expr->children[0]->eKind == ARRAY_EXP) {
+                emit("#ASSI_EXP");
+                // store index in v0
+                code_gen_expr(expr->children[0]->children[0]);
+                // index * 4
+                emit("add $v0, $v0, $v0");
+                emit("add $v0, $v0, $v0");
+                // store array offset in v1
+                asprintf(&instr, "li $v1, %d", -(expr->children[0]->nSymbolPtr->offset) + 4);
+                emit(instr);
+                // calculate offset of selected cell
+                // if only array (c[4]) on the stack and selected c[1]
+                // c[0] is $fp-16-4 (due to RA register), so
+                // c[1] is $fp-16-4+4, or 16+4 -> 20, 20-4 = 16 -> fp - 16
+                emit("subu $v1, $v1, $v0");
+                // fp-16 (see above)
+                emit("sub $v0, $fp, $v1");
+
+                // store selected cell address on the stack
+                emit("subu $sp, $sp, 4");
+                emit("sw $v0, 0($sp)");
+                // store rhs value in v0
+                code_gen_expr(expr->children[1]);
+                // get selected cell address back from the stack in v1
+                emit("lw $v1, 0($sp)");
+                emit("addu $sp, $sp, 4");
+
+                // store rhs value in selected cell address
+                emit("sw $v0, 0($v1)");
+            } else {
+                code_gen_expr(expr->children[1]);
+                if (expr->children[0]->nSymbolPtr->offset <= 0) {   // LOCAL VAR
+                    asprintf(&instr, "sw $v0, -%d($fp)", -(expr->children[0]->nSymbolPtr->offset) + 4);
+                } else {                                            // ARGUMENT
+                    asprintf(&instr, "sw $v0, %d($fp)", expr->children[0]->nSymbolPtr->offset);
+                }
+                emit(instr);
             }
-            emit(instr);
             break;
         case ADD_EXP:
             code_gen_binary_expr(expr);
@@ -92,6 +140,7 @@ void code_gen_expr(AstNode *expr){
             emit("sne $v0, $v0, $v1");
             break;
         case CALL_EXP: {
+            emit("#CALL_EXP");
             int nArgs = 0;
             if(expr->children[0] != NULL) {
                 AstNodePtr ptr = expr->children[0];
@@ -99,7 +148,6 @@ void code_gen_expr(AstNode *expr){
                     nArgs++;
                     ptr = ptr->sibling;
                 }
-
                 asprintf(&instr, "subu $sp, $sp, %d", nArgs*4);
                 emit(instr);
 
@@ -126,6 +174,7 @@ void code_gen_expr(AstNode *expr){
             break;
         }
         case CONST_EXP:
+        printf("CONST\n");
             asprintf(&instr, "li $v0, %d", expr->nValue);
             emit(instr);
             break;
@@ -143,8 +192,10 @@ int code_gen_localVarDecl(SymbolTablePtr scope) {
                 symelement->offset = -(nVar*4);
                 break;
             case ARRAY:
-                // TODO
+                nVar = nVar + symelement->stype->dimension;
+                symelement->offset = -(nVar*4);
                 break;
+            // TODO
             // case VOID:
             //     break;
             // case FUNCTION:
