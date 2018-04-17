@@ -55,9 +55,9 @@ void code_gen_expr(AstNode *expr){
             // c[1] is $fp-16-4+4, or 16+4 -> 20, 20-4 = 16 -> fp - 16
             emit("subu $v1, $v1, $v0");
             // fp-16 (see above)
-            emit("sub $v1, $fp, $v1");
+            emit("sub $v0, $fp, $v1");
             // store content of cell in v0
-            emit("lw $v0, 0($v1)");
+            emit("lw $v0, 0($v0)");
             break;
         case ASSI_EXP:
             if (expr->children[0]->eKind == ARRAY_EXP) {
