@@ -7,6 +7,7 @@ extern FILE         *outfile;
 extern AstNodePtr   program;
 
 char *instr;
+int methodNVar = 0;
 
 void emit_label(const char *label){
     fprintf(outfile, "%s:\n", label); 
@@ -189,11 +190,13 @@ int code_gen_localVarDecl(SymbolTablePtr scope) {
         switch(symelement->stype->kind) {
             case INT:
                 nVar++;
-                symelement->offset = -(nVar*4);
+                methodNVar++;
+                symelement->offset = -(methodNVar*4);
                 break;
             case ARRAY:
                 nVar = nVar + symelement->stype->dimension;
-                symelement->offset = -(nVar*4);
+                methodNVar = methodNVar + symelement->stype->dimension;
+                symelement->offset = -(methodNVar*4);
                 break;
             // TODO
             // case VOID:
@@ -340,7 +343,7 @@ void codegen_helper(AstNode *root) {
                 //back to caller
                 emit("jr $ra");
             }
-
+            methodNVar = 0;
             codegen_helper(root->sibling); // codegen next method
             break;
         case FORMALVAR:
