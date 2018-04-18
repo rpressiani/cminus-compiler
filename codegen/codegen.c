@@ -87,7 +87,7 @@ void code_gen_expr(AstNode *expr){
                     emit("addu $v0, $v1, $v0");
                 } else {
                     // store array offset in v1
-                    asprintf(&instr, "li $v1, %d", -(expr->nSymbolPtr->offset) + 4);
+                    asprintf(&instr, "li $v1, %d", -(expr->children[0]->nSymbolPtr->offset) + 4);
                     emit(instr);
                     // calculate offset of selected cell
                     // if only array (c[4]) on the stack and selected c[1]
