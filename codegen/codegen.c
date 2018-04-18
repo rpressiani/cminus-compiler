@@ -149,7 +149,7 @@ void code_gen_expr(AstNode *expr){
             break;
         case DIV_EXP:
             code_gen_binary_expr(expr);
-            emit("divu $v0, $v0, $v1");
+            emit("divu $v0, $v1, $v0");
             break;
         case GT_EXP:
             code_gen_binary_expr(expr);
