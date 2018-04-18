@@ -31,6 +31,7 @@ int typecheck(){
 	if (symElement == NULL || scopeDepth != symElement->scope)
 	{
 		input->nSymbolPtr = symInsert("input",input->nType,1);
+		input->nSymbolPtr->stype->kind = FUNCTION;
 		input->nSymbolPtr->stype->function = (Type *) malloc(sizeof(Type));
 		input->nSymbolPtr->stype->function->kind = INT;
 		input->nSymbolPtr->snode = input;
@@ -55,6 +56,7 @@ int typecheck(){
 	if (symElement1 == NULL || scopeDepth != symElement1->scope)
 	{
 		output->nSymbolPtr = symInsert("output",output->nType,1);
+		output->nSymbolPtr->stype->kind = FUNCTION;
 		output->nSymbolPtr->stype->function = (Type *) malloc(sizeof(Type));
 		output->nSymbolPtr->stype->function->kind = VOID;
 		output->nSymbolPtr->stype->function->function = (Type *) malloc(sizeof(Type));
