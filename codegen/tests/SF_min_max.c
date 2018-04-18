@@ -18,7 +18,7 @@ void main(void){
 	min=group_number[0];
 	
 	i=0;
-	while(i<=19)
+	while(i<=4)
 	{
 		if(max < group_number[i])
 			max = group_number[i];
