@@ -34,26 +34,23 @@ void code_gen_expr(AstNode *expr){
     if(expr == NULL) return;
 
     switch(expr->eKind) {
-        case VAR_EXP:
+        case VAR_EXP: {
+            char* cmd = (char*)malloc(sizeof(char)*2);
             if (expr->nSymbolPtr->stype->kind == ARRAY) {
-                if (expr->nSymbolPtr->scope == 0) {                 // GLOBAL VAR
-                    asprintf(&instr, "la $v0, %s", expr->nSymbolPtr->id);
-                } else if (expr->nSymbolPtr->offset <= 0) {         // LOCAL VAR
-                    asprintf(&instr, "la $v0, -%d($fp)", -(expr->nSymbolPtr->offset) + 4);
-                } else {                                            // ARGUMENT
-                    asprintf(&instr, "la $v0, %d($fp)", expr->nSymbolPtr->offset);
-                }
+                strcpy(cmd, "la");
             } else {
-                if (expr->nSymbolPtr->scope == 0) {                 // GLOBAL VAR
-                    asprintf(&instr, "lw $v0, %s", expr->nSymbolPtr->id);
-                } else if (expr->nSymbolPtr->offset <= 0) {         // LOCAL VAR
-                    asprintf(&instr, "lw $v0, -%d($fp)", -(expr->nSymbolPtr->offset) + 4);
-                } else {                                            // ARGUMENT
-                    asprintf(&instr, "lw $v0, %d($fp)", expr->nSymbolPtr->offset);
-                }
+                strcpy(cmd, "lw");
+            }
+            if (expr->nSymbolPtr->scope == 0) {                 // GLOBAL VAR
+                asprintf(&instr, "%s $v0, %s", cmd, expr->nSymbolPtr->id);
+            } else if (expr->nSymbolPtr->offset <= 0) {         // LOCAL VAR
+                asprintf(&instr, "%s $v0, -%d($fp)", cmd, -(expr->nSymbolPtr->offset) + 4);
+            } else {                                            // ARGUMENT
+                asprintf(&instr, "%s $v0, %d($fp)", cmd, expr->nSymbolPtr->offset);
             }
             emit(instr);
             break;
+        }
         case ARRAY_EXP:
             // store index in v0
             code_gen_expr(expr->children[0]);
