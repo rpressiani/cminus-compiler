@@ -111,6 +111,14 @@ void code_gen_expr(AstNode *expr){
                     emit("subu $v1, $v1, $v0");
                     // fp-16 (see above)
                     emit("sub $v0, $fp, $v1");
+                } else {
+                    // store arg addr in v1
+                    asprintf(&instr, "la $v1, %d($fp)", expr->children[0]->nSymbolPtr->offset);
+                    emit(instr);
+                    // get array address
+                    emit("lw $v1, 0($v1)");
+                    // calculate offset of selected cell
+                    emit("add $v0, $v1, $v0");
                 }
                 // store selected cell address on the stack
                 emit("subu $sp, $sp, 4");
