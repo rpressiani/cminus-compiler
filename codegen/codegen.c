@@ -75,12 +75,13 @@ void code_gen_expr(AstNode *expr){
                 // fp-16 (see above)
                 emit("sub $v0, $fp, $v1");
             } else {                                            // ARGUMENT
-                // store array addr in v1
-                asprintf(&instr, "la $v1, %d($fp)", expr->nSymbolPtr->offset);  // get address
+                // store arg addr in v1
+                asprintf(&instr, "la $v1, %d($fp)", expr->nSymbolPtr->offset);
                 emit(instr);
+                // get array address
+                emit("lw $v1, 0($v1)");
                 // calculate offset of selected cell
-                emit("addu $v0, $v1, $v0");
-                emit("lw $v0, 0($v0)");
+                emit("add $v0, $v1, $v0");
             }
             // store content of cell in v0
             emit("lw $v0, 0($v0)");
