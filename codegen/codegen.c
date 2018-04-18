@@ -303,6 +303,10 @@ void code_gen_stmt(AstNode *stmt){
             emit("lw $fp, 0($fp)");
             //adjust the stack once more for $fp and $ra
             emit("addu $sp, $sp, 8");
+            if (methodNVar > 0) {
+                asprintf(&instr, "addu  $sp, $sp, %d", methodNVar*4);
+                emit(instr);
+            }
             //back to caller
             emit("jr $ra");
             break;
@@ -313,6 +317,7 @@ void code_gen_stmt(AstNode *stmt){
             if(stmt->children[0] != NULL) code_gen_stmt(stmt->children[0]);
             // adjust the stack back
             if (nVar > 0) {
+                methodNVar = methodNVar - nVar;
                 asprintf(&instr, "addu  $sp, $sp, %d", nVar*4);
                 emit(instr);
             }
