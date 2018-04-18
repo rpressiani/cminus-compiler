@@ -35,12 +35,22 @@ void code_gen_expr(AstNode *expr){
 
     switch(expr->eKind) {
         case VAR_EXP:
-            if (expr->nSymbolPtr->scope == 0) {                 // GLOBAL VAR
-                asprintf(&instr, "lw $v0, %s", expr->nSymbolPtr->id);
-            } else if (expr->nSymbolPtr->offset <= 0) {         // LOCAL VAR
-                asprintf(&instr, "lw $v0, -%d($fp)", -(expr->nSymbolPtr->offset) + 4);
-            } else {                                            // ARGUMENT
-                asprintf(&instr, "lw $v0, %d($fp)", expr->nSymbolPtr->offset);
+            if (expr->nSymbolPtr->stype->kind == ARRAY) {
+                if (expr->nSymbolPtr->scope == 0) {                 // GLOBAL VAR
+                    asprintf(&instr, "la $v0, %s", expr->nSymbolPtr->id);
+                } else if (expr->nSymbolPtr->offset <= 0) {         // LOCAL VAR
+                    asprintf(&instr, "la $v0, -%d($fp)", -(expr->nSymbolPtr->offset) + 4);
+                } else {                                            // ARGUMENT
+                    asprintf(&instr, "la $v0, %d($fp)", expr->nSymbolPtr->offset);
+                }
+            } else {
+                if (expr->nSymbolPtr->scope == 0) {                 // GLOBAL VAR
+                    asprintf(&instr, "lw $v0, %s", expr->nSymbolPtr->id);
+                } else if (expr->nSymbolPtr->offset <= 0) {         // LOCAL VAR
+                    asprintf(&instr, "lw $v0, -%d($fp)", -(expr->nSymbolPtr->offset) + 4);
+                } else {                                            // ARGUMENT
+                    asprintf(&instr, "lw $v0, %d($fp)", expr->nSymbolPtr->offset);
+                }
             }
             emit(instr);
             break;
@@ -51,12 +61,12 @@ void code_gen_expr(AstNode *expr){
             emit("add $v0, $v0, $v0");
             emit("add $v0, $v0, $v0");
             if (expr->nSymbolPtr->scope == 0) {                 // GLOBAL VAR
-                // store array offset in v1
+                // store array addr in v1
                 asprintf(&instr, "la $v1, %s", expr->nSymbolPtr->id);  // get address
                 emit(instr);
                 // calculate offset of selected cell
                 emit("addu $v0, $v1, $v0");
-            } else {
+            } else if (expr->nSymbolPtr->offset <= 0) {         // LOCAL VAR
                 // store array offset in v1
                 asprintf(&instr, "li $v1, %d", -(expr->nSymbolPtr->offset) + 4);
                 emit(instr);
@@ -67,6 +77,13 @@ void code_gen_expr(AstNode *expr){
                 emit("subu $v1, $v1, $v0");
                 // fp-16 (see above)
                 emit("sub $v0, $fp, $v1");
+            } else {                                            // ARGUMENT
+                // store array addr in v1
+                asprintf(&instr, "la $v1, %d($fp)", expr->nSymbolPtr->offset);  // get address
+                emit(instr);
+                // calculate offset of selected cell
+                emit("addu $v0, $v1, $v0");
+                emit("lw $v0, 0($v0)");
             }
             // store content of cell in v0
             emit("lw $v0, 0($v0)");
@@ -80,7 +97,7 @@ void code_gen_expr(AstNode *expr){
                 emit("add $v0, $v0, $v0");
 
                 if (expr->children[0]->nSymbolPtr->scope == 0) {                 // GLOBAL VAR
-                    // store array offset in v1
+                    // store array addr in v1
                     asprintf(&instr, "la $v1, %s", expr->children[0]->nSymbolPtr->id);  // get address
                     emit(instr);
                     // calculate offset of selected cell
@@ -166,6 +183,7 @@ void code_gen_expr(AstNode *expr){
             int nArgs = 0;
             if(expr->children[0] != NULL) {
                 AstNodePtr ptr = expr->children[0];
+                // create space on the stack for the parameters
                 while(ptr) {
                     nArgs++;
                     ptr = ptr->sibling;
