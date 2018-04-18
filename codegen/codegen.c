@@ -349,6 +349,15 @@ void codegen_helper(AstNode *root) {
                 emit("li $v0, 1");
                 emit("lw $a0, 4($fp)");
                 emit("syscall");
+            } else if (strcmp(root->nSymbolPtr->id, "input") == 0) {
+                emit("li $v0, 5");
+                emit("syscall");
+                emit("lw $ra, -4($fp)");
+                emit("lw $fp, 0($fp)");
+                //adjust the stack once more for $fp and $ra
+                emit("addu $sp, $sp, 8");
+                //back to caller
+                emit("jr $ra");
             }
 
             if (root->nType->function->kind == VOID) {
