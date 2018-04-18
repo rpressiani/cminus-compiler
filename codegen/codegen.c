@@ -56,8 +56,6 @@ void code_gen_expr(AstNode *expr){
                 emit(instr);
                 // calculate offset of selected cell
                 emit("addu $v0, $v1, $v0");
-                // store content of cell in v0
-                emit("lw $v0, 0($v0)");
             } else {
                 // store array offset in v1
                 asprintf(&instr, "li $v1, %d", -(expr->nSymbolPtr->offset) + 4);
@@ -69,9 +67,9 @@ void code_gen_expr(AstNode *expr){
                 emit("subu $v1, $v1, $v0");
                 // fp-16 (see above)
                 emit("sub $v0, $fp, $v1");
-                // store content of cell in v0
-                emit("lw $v0, 0($v0)");
             }
+            // store content of cell in v0
+            emit("lw $v0, 0($v0)");
             break;
         case ASSI_EXP:
             if (expr->children[0]->eKind == ARRAY_EXP) {
@@ -87,16 +85,6 @@ void code_gen_expr(AstNode *expr){
                     emit(instr);
                     // calculate offset of selected cell
                     emit("addu $v0, $v1, $v0");
-                    // store selected cell address on the stack
-                    emit("subu $sp, $sp, 4");
-                    emit("sw $v0, 0($sp)");
-                    // store rhs value in v0
-                    code_gen_expr(expr->children[1]);
-                    // get selected cell address back from the stack in v1
-                    emit("lw $v1, 0($sp)");
-                    emit("addu $sp, $sp, 4");
-                    // store rhs value in selected cell address
-                    emit("sw $v0, 0($v1)");
                 } else {
                     // store array offset in v1
                     asprintf(&instr, "li $v1, %d", -(expr->nSymbolPtr->offset) + 4);
@@ -108,19 +96,17 @@ void code_gen_expr(AstNode *expr){
                     emit("subu $v1, $v1, $v0");
                     // fp-16 (see above)
                     emit("sub $v0, $fp, $v1");
-
-                    // store selected cell address on the stack
-                    emit("subu $sp, $sp, 4");
-                    emit("sw $v0, 0($sp)");
-                    // store rhs value in v0
-                    code_gen_expr(expr->children[1]);
-                    // get selected cell address back from the stack in v1
-                    emit("lw $v1, 0($sp)");
-                    emit("addu $sp, $sp, 4");
-
-                    // store rhs value in selected cell address
-                    emit("sw $v0, 0($v1)");
                 }
+                // store selected cell address on the stack
+                emit("subu $sp, $sp, 4");
+                emit("sw $v0, 0($sp)");
+                // store rhs value in v0
+                code_gen_expr(expr->children[1]);
+                // get selected cell address back from the stack in v1
+                emit("lw $v1, 0($sp)");
+                emit("addu $sp, $sp, 4");
+                // store rhs value in selected cell address
+                emit("sw $v0, 0($v1)");
             } else {
                 code_gen_expr(expr->children[1]);
                 if (expr->children[0]->nSymbolPtr->scope == 0) {                 // GLOBAL VAR
