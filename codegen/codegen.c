@@ -5,6 +5,7 @@
 
 extern FILE         *outfile;
 extern AstNodePtr   program;
+extern SymbolTableStackEntryPtr symbolStackTop;
 
 char *instr;
 int methodNVar = 0;
@@ -34,7 +35,9 @@ void code_gen_expr(AstNode *expr){
 
     switch(expr->eKind) {
         case VAR_EXP:
-            if (expr->nSymbolPtr->offset <= 0) {                // LOCAL VAR
+            if (expr->nSymbolPtr->scope == 0) {                 // GLOBAL VAR
+                asprintf(&instr, "lw $v0, %s", expr->nSymbolPtr->id);
+            } else if (expr->nSymbolPtr->offset <= 0) {         // LOCAL VAR
                 asprintf(&instr, "lw $v0, -%d($fp)", -(expr->nSymbolPtr->offset) + 4);
             } else {                                            // ARGUMENT
                 asprintf(&instr, "lw $v0, %d($fp)", expr->nSymbolPtr->offset);
@@ -47,29 +50,17 @@ void code_gen_expr(AstNode *expr){
             // index * 4
             emit("add $v0, $v0, $v0");
             emit("add $v0, $v0, $v0");
-            // store array offset in v1
-            asprintf(&instr, "li $v1, %d", -(expr->nSymbolPtr->offset) + 4);
-            emit(instr);
-            // calculate offset of selected cell
-            // if only array (c[4]) on the stack and selected c[1]
-            // c[0] is $fp-16-4 (due to RA register), so
-            // c[1] is $fp-16-4+4, or 16+4 -> 20, 20-4 = 16 -> fp - 16
-            emit("subu $v1, $v1, $v0");
-            // fp-16 (see above)
-            emit("sub $v0, $fp, $v1");
-            // store content of cell in v0
-            emit("lw $v0, 0($v0)");
-            break;
-        case ASSI_EXP:
-            if (expr->children[0]->eKind == ARRAY_EXP) {
-                emit("#ASSI_EXP");
-                // store index in v0
-                code_gen_expr(expr->children[0]->children[0]);
-                // index * 4
-                emit("add $v0, $v0, $v0");
-                emit("add $v0, $v0, $v0");
+            if (expr->nSymbolPtr->scope == 0) {                 // GLOBAL VAR
                 // store array offset in v1
-                asprintf(&instr, "li $v1, %d", -(expr->children[0]->nSymbolPtr->offset) + 4);
+                asprintf(&instr, "la $v1, %s", expr->nSymbolPtr->id);  // get address
+                emit(instr);
+                // calculate offset of selected cell
+                emit("addu $v0, $v1, $v0");
+                // store content of cell in v0
+                emit("lw $v0, 0($v0)");
+            } else {
+                // store array offset in v1
+                asprintf(&instr, "li $v1, %d", -(expr->nSymbolPtr->offset) + 4);
                 emit(instr);
                 // calculate offset of selected cell
                 // if only array (c[4]) on the stack and selected c[1]
@@ -78,21 +69,65 @@ void code_gen_expr(AstNode *expr){
                 emit("subu $v1, $v1, $v0");
                 // fp-16 (see above)
                 emit("sub $v0, $fp, $v1");
+                // store content of cell in v0
+                emit("lw $v0, 0($v0)");
+            }
+            break;
+        case ASSI_EXP:
+            if (expr->children[0]->eKind == ARRAY_EXP) {
+                // store index in v0
+                code_gen_expr(expr->children[0]->children[0]);
+                // index * 4
+                emit("add $v0, $v0, $v0");
+                emit("add $v0, $v0, $v0");
 
-                // store selected cell address on the stack
-                emit("subu $sp, $sp, 4");
-                emit("sw $v0, 0($sp)");
-                // store rhs value in v0
-                code_gen_expr(expr->children[1]);
-                // get selected cell address back from the stack in v1
-                emit("lw $v1, 0($sp)");
-                emit("addu $sp, $sp, 4");
+                if (expr->children[0]->nSymbolPtr->scope == 0) {                 // GLOBAL VAR
+                    // store array offset in v1
+                    asprintf(&instr, "la $v1, %s", expr->children[0]->nSymbolPtr->id);  // get address
+                    emit(instr);
+                    // calculate offset of selected cell
+                    emit("addu $v0, $v1, $v0");
+                    // store selected cell address on the stack
+                    emit("subu $sp, $sp, 4");
+                    emit("sw $v0, 0($sp)");
+                    // store rhs value in v0
+                    code_gen_expr(expr->children[1]);
+                    // get selected cell address back from the stack in v1
+                    emit("lw $v1, 0($sp)");
+                    emit("addu $sp, $sp, 4");
+                    // store rhs value in selected cell address
+                    emit("sw $v0, 0($v1)");
+                } else {
+                    // store array offset in v1
+                    asprintf(&instr, "li $v1, %d", -(expr->nSymbolPtr->offset) + 4);
+                    emit(instr);
+                    // calculate offset of selected cell
+                    // if only array (c[4]) on the stack and selected c[1]
+                    // c[0] is $fp-16-4 (due to RA register), so
+                    // c[1] is $fp-16-4+4, or 16+4 -> 20, 20-4 = 16 -> fp - 16
+                    emit("subu $v1, $v1, $v0");
+                    // fp-16 (see above)
+                    emit("sub $v0, $fp, $v1");
 
-                // store rhs value in selected cell address
-                emit("sw $v0, 0($v1)");
+                    // store selected cell address on the stack
+                    emit("subu $sp, $sp, 4");
+                    emit("sw $v0, 0($sp)");
+                    // store rhs value in v0
+                    code_gen_expr(expr->children[1]);
+                    // get selected cell address back from the stack in v1
+                    emit("lw $v1, 0($sp)");
+                    emit("addu $sp, $sp, 4");
+
+                    // store rhs value in selected cell address
+                    emit("sw $v0, 0($v1)");
+                }
             } else {
                 code_gen_expr(expr->children[1]);
-                if (expr->children[0]->nSymbolPtr->offset <= 0) {   // LOCAL VAR
+                if (expr->children[0]->nSymbolPtr->scope == 0) {                 // GLOBAL VAR
+                    asprintf(&instr, "la $v1, %s", expr->children[0]->nSymbolPtr->id);  // get address
+                    emit(instr);
+                    asprintf(&instr, "sw $v0, 0($v1)");
+                } else if (expr->children[0]->nSymbolPtr->offset <= 0) {   // LOCAL VAR
                     asprintf(&instr, "sw $v0, -%d($fp)", -(expr->children[0]->nSymbolPtr->offset) + 4);
                 } else {                                            // ARGUMENT
                     asprintf(&instr, "sw $v0, %d($fp)", expr->children[0]->nSymbolPtr->offset);
@@ -175,7 +210,6 @@ void code_gen_expr(AstNode *expr){
             break;
         }
         case CONST_EXP:
-        printf("CONST\n");
             asprintf(&instr, "li $v0, %d", expr->nValue);
             emit(instr);
             break;
@@ -184,6 +218,8 @@ void code_gen_expr(AstNode *expr){
 
 int code_gen_localVarDecl(SymbolTablePtr scope) {
     int nVar = 0;
+
+    if (!scope->queue) return nVar;
 
     ElementPtr symelement = scope->queue;
     while(symelement) {
@@ -287,10 +323,6 @@ void code_gen_stmt(AstNode *stmt){
     code_gen_stmt(stmt->sibling); // codegen next statement
 }
 
-// void code_gen_method(AstNode *node){
-// ;
-// }
-
 void printFile(char* filename) {
     FILE *fptr = fopen(filename, "r");
     if (fptr == NULL)
@@ -366,6 +398,37 @@ void codegen(){
     if (program) {
         // TODO filname same as source code file
         outfile = fopen("temp.s","w+");
+
+        if (symbolStackTop->symbolTablePtr->queue) {
+            emit(".data");
+            int nVar = 0;
+            ElementPtr symelement = symbolStackTop->symbolTablePtr->queue;
+            while(symelement) {
+                switch(symelement->stype->kind) {
+                    case INT:
+                        if (!symelement->stype->function) break;
+                        emit_label(symelement->id);
+                        asprintf(&instr, ".space %d", 4);
+                        emit(instr);
+                        break;
+                    case ARRAY:
+                        emit_label(symelement->id);
+                        asprintf(&instr, ".space %d", symelement->stype->dimension*4);
+                        emit(instr);
+                        break;
+                    // TODO
+                    case VOID:
+                        break;
+                    case FUNCTION:
+                        break;
+                    default:
+                        // TODO
+                        printf("ERROR\n");
+                        break;
+                }
+                symelement = symelement->queue_next; 
+            }
+        }
 
         emit(".text");
         emit(".align 2");
