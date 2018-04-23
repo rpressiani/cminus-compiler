@@ -22,7 +22,7 @@ OBJECTS=cmparser.o cmlexer.o symbolTable.o ast.o util.o typecheck.o codegen.o
 
 SOURCES=cmlexer.l cmparser.y symbolTable.c ast.c util.c typecheck.c codegen.c
 
-CTEMPS=cmlexer.c cmparser.c cmparser.tab.h cmparser.tab.c cmparser.output
+CTEMPS=cmlexer.c cmparser.c cmparser.tab.h cmparser.tab.c cmparser.output program.s
 
 $(PROGRAM): $(OBJECTS)
 	$(MKDIR) -p $(BINDIR)
