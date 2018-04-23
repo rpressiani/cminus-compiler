@@ -58,3 +58,4 @@ cmlexer.c
 cmparser.c
 *.output
 *.s
+*.tar
