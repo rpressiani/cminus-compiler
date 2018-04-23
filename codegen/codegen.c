@@ -185,7 +185,6 @@ void code_gen_expr(AstNode *expr){
             emit("sne $v0, $v0, $v1");
             break;
         case CALL_EXP: {
-            emit("#CALL_EXP");
             int nArgs = 0;
             if(expr->children[0] != NULL) {
                 AstNodePtr ptr = expr->children[0];
@@ -244,13 +243,7 @@ int code_gen_localVarDecl(SymbolTablePtr scope) {
                 methodNVar = methodNVar + symelement->stype->dimension;
                 symelement->offset = -(methodNVar*4);
                 break;
-            // TODO
-            // case VOID:
-            //     break;
-            // case FUNCTION:
-            //     break;
             default:
-                // TODO
                 printf("ERROR\n");
                 break;
         }
@@ -390,7 +383,6 @@ void codegen_helper(AstNode *root) {
             }
 
             if (root->nType->function->kind == VOID) {
-                // TODO check if return; is present in VOID function
                 //restore values of $ra and $fp
                 emit("lw $ra, -4($fp)");
                 emit("lw $fp, 0($fp)");
@@ -420,8 +412,7 @@ void codegen_helper(AstNode *root) {
 void codegen(){
 
     if (program) {
-        // TODO filname same as source code file
-        outfile = fopen("temp.s","w+");
+        outfile = fopen("program.s","w+");
 
         if (symbolStackTop->symbolTablePtr->queue) {
             emit(".data");
@@ -440,13 +431,11 @@ void codegen(){
                         asprintf(&instr, ".space %d", symelement->stype->dimension*4);
                         emit(instr);
                         break;
-                    // TODO
                     case VOID:
                         break;
                     case FUNCTION:
                         break;
                     default:
-                        // TODO
                         printf("ERROR\n");
                         break;
                 }
