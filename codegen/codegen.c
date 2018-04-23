@@ -1,7 +1,7 @@
 #include "ast.h"
 #include "codegen.h"
 
-#define VERBOSE 1
+#define VERBOSE 0
 
 extern FILE         *outfile;
 extern AstNodePtr   program;
@@ -421,10 +421,12 @@ void codegen(){
             while(symelement) {
                 switch(symelement->stype->kind) {
                     case INT:
-                        if (!symelement->stype->function) break;
-                        emit_label(symelement->id);
-                        asprintf(&instr, ".space %d", 4);
-                        emit(instr);
+                        if (symelement->stype->function == NULL) {
+                            emit_label(symelement->id);
+                            asprintf(&instr, ".space %d", 4);
+                            emit(instr);
+                            break;
+                        }
                         break;
                     case ARRAY:
                         emit_label(symelement->id);

@@ -35,6 +35,7 @@ Type* new_type(TypeKind kind)
 {
     Type *typ1 = (Type *)malloc(sizeof(Type));
     typ1->kind = kind; 	
+    typ1->function = NULL;
     return typ1;
 }
 
