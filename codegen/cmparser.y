@@ -6,12 +6,14 @@
 #include "ast.h"
 #include "symbolTable.h"
 #include "util.h"
-#include "typecheck.h"
+#include "codegen.h"
+
 
 /* other external function prototypes */
 extern int yylex();
 extern int initLex(int ,  char **);
 extern AstNodePtr new_Node(NodeKind kind); 
+extern int typecheck(void);
     
 /* external global variables */
 
@@ -86,85 +88,73 @@ Functions    : Fun_Declaration { $$ = $1; }
 ;
 
 Var_Declaration : Type_Specifier TOK_ID TOK_SEMI {	
-                            if ($1->kind != INT){	//C-- deals only with integers
+                                                       if ($1->kind != INT){
 							    yyerror("non-int variable declared\n");
-	     					    yyerror($2);	
-						    }	
-							ElementPtr symElement = symLookup($2); 
-							if(!symElement || scopeDepth != symElement->scope) 
-								symInsert($2,$1,yylineno);		
+	     						    yyerror($2);
+						       }	
+							ElementPtr symElement = symLookup($2);
+							if(!symElement || scopeDepth != symElement->scope)
+								symInsert($2,$1,yylineno);
 							else 
 	     						{
-	     							yyerror("Redeclaration of variable"); 
+	     							yyerror("Redeclaration of variable");
 	     							yyerror($2);
-	     							free($1);	
+	     							free($1);
 	     						}
 	     					}	
 		| Type_Specifier TOK_ID TOK_LSQ TOK_NUM TOK_RSQ TOK_SEMI { 
-                            if ($1->kind != INT){ //C-- should have only integer types
-                   			    yyerror("non-int variable declared\n");
-	     					    yyerror($2);
-					   		}	
-							ElementPtr symElement = symLookup($2); //look up identifier in symbol table
-							if(!symElement || scopeDepth != symElement->scope) {	/* reuse Type for storing dimension */
-								$1->kind = ARRAY; 
-      							$1->dimension = $4; 
-      							$1->function = NULL; 
- 								symInsert($2,$1,yylineno); //insert it in symbol table
-      						}
-      						else {
-      							yyerror("Redeclaration of variable");
-	     						yyerror($2);
-      							free($1);
-      						} 	
-      			}
+                                                                             if ($1->kind != INT){
+                   							    yyerror("non-int variable declared\n");
+	     								    yyerror($2);
+					   			            }	
+									   ElementPtr symElement = symLookup($2);
+									   if(!symElement || scopeDepth != symElement->scope)
+									   {	/* reuse Type for storing dimension */
+									   	$1->kind = ARRAY; 
+      									   	$1->dimension = $4;
+      									   	$1->function = NULL; 
+      									      	symInsert($2,$1,yylineno);	
+      									   }
+      									   else 
+      									   {
+      									   	yyerror("Redeclaration of variable");
+	     									yyerror($2);
+      									   	free($1);
+      									   } 	
+      									  }
 ;
 
-Fun_Declaration : Type_Specifier TOK_ID TOK_LPAREN {	
-						$<nodePtr>$ =  new_Node(METHOD); 	 //Mid-rule action. It counts as a component of the rule. It has not
-						$<nodePtr>$->nLinenumber = yylineno; //been defined in the token and non-terminal declarations, so its type is set using 
-															 //the $<...>$ syntax. $<nodePtr>$ means that the datatype of the value
-						$<nodePtr>$->nType = $1;	     	 //represented by this component is nodePtr 
-						ElementPtr symElement = symLookup($2); //the identifier is looked up to see if it exists. If it does not exist,
-						if(!symElement || scopeDepth != symElement->scope) { 	 //or if it has been declared in a previous scope 
-							$<nodePtr>$->nSymbolPtr = symInsert($2,$1,yylineno); //insert it in the symbol table, set the nSymbolPtr
-	 						$<nodePtr>$->nSymbolPtr->stype->function = (Type*) malloc(sizeof(Type)); //allocate the type for the function
-	 						$<nodePtr>$->nSymbolPtr->stype->function->kind = $1->kind; 	//set the kind of the function, i.e. its return type
-	 						$<nodePtr>$->nSymbolPtr->stype->function->function = NULL; 	//set the function field of the return typa as NULL, i.e. no params
-	 						$<nodePtr>$->nSymbolPtr->snode = $<nodePtr>$; 			 //nSymbolPtr->snode must point to the AST node itself
-							$1->kind = FUNCTION; 								//$1->kind is a function.
-	 						enterScope(); 										//create a new scope for the function 
-						}	
-						else {
-   	  						yyerror("Redeclaration of function");
-							yyerror($2);
-   	  						free($1);
-   						}  
-				}
-				Params TOK_RPAREN     {
-					$<nodePtr>4->children[0] = $5; 	//refer to the previous semantic action node with $<nodePtr>4, 
-													//since it is the fourth component of the rule
-					if ($5)							//params not equal to void
-					{
-						AstNodePtr param = $5;
-						Type* prec = $<nodePtr>4->nSymbolPtr->stype->function;
+Fun_Declaration : Type_Specifier TOK_ID TOK_LPAREN {
+							$<nodePtr>$ =  new_Node(METHOD);
+							$<nodePtr>$->nLinenumber = yylineno; 
+							$<nodePtr>$->nType = $1;
+							ElementPtr symElement = symLookup($2);
+							if(!symElement || scopeDepth != symElement->scope)
+							{
+							 	$<nodePtr>$->nSymbolPtr = symInsert($2,$1,yylineno);
+							 	$<nodePtr>$->nSymbolPtr->stype->function = (Type*) malloc(sizeof(Type));
+							 	$<nodePtr>$->nSymbolPtr->stype->function->kind = $1->kind;
+							 	$<nodePtr>$->nSymbolPtr->snode = $<nodePtr>$;
+							 	$1->kind = FUNCTION;
+							 	enterScope();
+							}	
+							else 
+   		   					{
+   		   					  	yyerror("Redeclaration of function");
+	     							yyerror($2);
+   		   					  	free($1);
+   		   					}  
+						   }
 
-						while(param) {
-							prec->function = param->nType;
+			     Params TOK_RPAREN     {
 
-							prec = prec->function;
-							param = param->sibling;
-						}
-						prec->function = NULL;
-					}
-
-				} 					//we also need to specify its type. children[0] is represented by Params. 
-				Compound_Stmt { /* changed from Compound_Stmt_Function to Compount_Stmt */
-					$<nodePtr>4->children[1] = $8; 	//Compound Statement. According to the handout, the children[1] should be set to Compund_Stmt.
-					$$ = $<nodePtr>4; //this is the last action, $$, i.e. Fun_Declaration is set to the node created in the first semantic action, which represents
-
-					leaveScope(); /* added to pop off the scope entered earlier in Fun_Declaration */
-				}  	 	  		       	     
+							$<nodePtr>4->children[0] = $5; 	
+					           } 
+				 Compound_Stmt     {
+				       			$<nodePtr>4->children[1] = $8; 	
+				       			$$ = $<nodePtr>4;
+				       			leaveScope();
+				 		   } 	 	  		       	     
 											 
 ;
 
@@ -173,31 +163,31 @@ Params : Param_List {$$ = $1;}
 ;
 
 Param_List : Param_List TOK_COMMA Param { 
-						$<nodePtr>$ = $1; //this is a paramter list appearing in a function declaration. Mid-rule action. Set its value to $1. 
-						while($<nodePtr>$->sibling)	//go to the end of the list of siblings
-							$<nodePtr>$ = $<nodePtr>$->sibling; 
-						$<nodePtr>$->sibling = $3; //set the sibling to $3, that is to the next Param in input. This whole list (current $3 included) will represent Param_List
-						$3->sibling = NULL;	   //so far if there are even more params in input, ie. as long as this rule keeps matching.
+						$<nodePtr>$ = $1;
+						while($<nodePtr>$->sibling)
+							$<nodePtr>$ = $<nodePtr>$->sibling;
+						$<nodePtr>$->sibling = $3;
+						$3->sibling = NULL;
 						$$ = $1;
 					}
 	   | Param {
-	   		$1->sibling = NULL;	//single parameter. It has no siblings   		
+	   		$1->sibling = NULL;	   		
 	   		$$ = $1;	   		
 	   	   }
 ;
 
 Param : Type_Specifier TOK_ID  { 	
-					ElementPtr symElement = symLookup($2); //lookup if it has been declared before
-					if(!symElement || scopeDepth != symElement->scope)// if not declared before, or declared in a different scope, it must be inserted in the current (i.e. function) 												  //scope
+					ElementPtr symElement = symLookup($2);
+					if(!symElement || scopeDepth != symElement->scope)
 					{
-						$$ =  new_Node(FORMALVAR);	//this is a formal variable
-						$$->nLinenumber = yylineno;	//set the line number
-						if ($1->kind != INT){		//if it is not INT, C-- error
+						$$ =  new_Node(FORMALVAR);
+						$$->nLinenumber = yylineno;
+						if ($1->kind != INT){
 						  yyerror("non-int variable declared\n");
 						}
 						else{
-						  $$->nSymbolPtr = symInsert($2,$1,yylineno); //otherwise insert in symbol table, set nSymbolPtr to the entry in the symbol table
-						  $$->nType = $1;	//set the type of the whole Param to $1 (i.e. Type_Specifier)
+						  $$->nSymbolPtr = symInsert($2,$1,yylineno);
+						  $$->nType = $1;
 						}
 					}	
 					else 
@@ -232,47 +222,47 @@ Param : Type_Specifier TOK_ID  {
 ;
 
 Type_Specifier : TOK_INT {
-			   $$ = (Type*) new_type(INT); //creates a new Type INT struct, it is used elsewhere whenever Type_Specifier appears (?)
+			   $$ = (Type*) new_type(INT); 
 			 }
 	       | TOK_VOID { 
-	       		   $$ = (Type*) new_type(VOID); //creates a new Type VOID struct
+	       		   $$ = (Type*) new_type(VOID);
 	       		  }
 ;
 
 Compound_Stmt : TOK_LBRACE {  
-				enterScope(); //a compound statement has a different scope from that of the function declaration, as per handout instructions
-				$<nodePtr>$ =  new_StmtNode(COMPOUND_STMT);//mid-rule action. Create a new StmtNode of kind Compund_Stmt. 
-				$<nodePtr>$->nSymbolTabPtr = symbolStackTop->symbolTablePtr; //the hashtable with the Symbol Entries
-			   	$<nodePtr>$->nLinenumber = yylineno;			   	//set the line number
-			   }
-		Statements { $<nodePtr>2->children[0] = $3; } // should point to first statement. The others will be its siblings
-		TOK_RBRACE { 
-				leaveScope(); //Statements will be parsed and the actions executed, then the scope ends.
-				$$ = $<nodePtr>2; //set $$ to the second node.
-			   }
-						 
-              | TOK_LBRACE {  
-				enterScope(); //same as the previous, only we have Local_Declarations also this time. Local_Declarations will be parsed and its actions executed. 
-				$<nodePtr>$ =  new_StmtNode(COMPOUND_STMT); //This seems like a bottom-up parser (?)
+				enterScope(); 
+				$<nodePtr>$ =  new_StmtNode(COMPOUND_STMT);
 				$<nodePtr>$->nSymbolTabPtr = symbolStackTop->symbolTablePtr;
 			   	$<nodePtr>$->nLinenumber = yylineno;			   	
 			   }
-                Local_Declarations Statements { $<nodePtr>2->children[0] = $4;} // should point to first statement
+		Statements { $<nodePtr>2->children[0] = $3; } // shud point to first statement
+		TOK_RBRACE { 
+				leaveScope();
+				$$ = $<nodePtr>2;
+			   }
+						 
+              | TOK_LBRACE {  
+				enterScope(); 
+				$<nodePtr>$ =  new_StmtNode(COMPOUND_STMT);
+				$<nodePtr>$->nSymbolTabPtr = symbolStackTop->symbolTablePtr;
+			   	$<nodePtr>$->nLinenumber = yylineno;			   	
+			   }
+                Local_Declarations Statements { $<nodePtr>2->children[0] = $4;} // shud point to first statement
                 TOK_RBRACE { 
                 		leaveScope();
                 		$$ = $<nodePtr>2;
                 	   }
 ;
 
-Local_Declarations : Var_Declaration Local_Declarations {} //Var_Declaration takes care of inserting in symbol table, nothing to do here
+Local_Declarations : Var_Declaration Local_Declarations {}
 		   | Var_Declaration {}
 ;
 
 Statements : Statement Statements {
-				     $1->sibling = $2; //for every statement, set its sibling to the rest of the statements
+				     $1->sibling = $2;
 				     $$ = $1;				    
 				  }
-	   | {$$=NULL;}		//when no more statements this is null
+	   | {$$=NULL;}
 ;
 
 Statement : Expr_Statement  { 
@@ -361,10 +351,10 @@ Expression : Var TOK_ASSIGN {
 ;
 
 Var : TOK_ID { 
-		$$ =  new_ExprNode(VAR_EXP); //create a new ExprNode to represent the variable
-		$$->nLinenumber = yylineno;  
-		$$->nSymbolPtr =  symLookup($1); 
-		if(!$$->nSymbolPtr)		
+		$$ =  new_ExprNode(VAR_EXP);
+		$$->nLinenumber = yylineno;
+		$$->nSymbolPtr =  symLookup($1);
+		if(!$$->nSymbolPtr)
 		{
 			yyerror("Variable must be declared before use");
 			yyerror($1);
@@ -374,74 +364,74 @@ Var : TOK_ID {
     | TOK_ID TOK_LSQ Expression TOK_RSQ {
     					 $$ =  new_ExprNode(ARRAY_EXP);
     					 $$->nLinenumber = yylineno;
-				  		 $$->nSymbolPtr = symLookup($1);
-						 if(!$$->nSymbolPtr)
- 						 {  	
- 						 	yyerror("Variable must be declared before use");
-							yyerror($1);
-	 					 	free($$);
- 						 }
-						 else
-						 	$$->children[0] = $3;			  	
+			  		 $$->nSymbolPtr = symLookup($1);
+					 if(!$$->nSymbolPtr)
+ 					 {  	
+ 					 	yyerror("Variable must be declared before use");
+						yyerror($1);
+ 					 	free($$);
+ 					 }
+					 else
+					 	$$->children[0] = $3;			  	
     					 }
 ;
 
 Simple_Expression : Additive_Expression TOK_GT {
 							$<nodePtr>$ =  new_ExprNode(GT_EXP);
 							$<nodePtr>$->nLinenumber = yylineno;
-	     					$<nodePtr>$->children[0] = $1;	 			
+	     						$<nodePtr>$->children[0] = $1;	 			
 					       }
-					Additive_Expression {
-							$<nodePtr>3->children[1] = $4;
-							$$ = $<nodePtr>3;		
+			Additive_Expression {
+						$<nodePtr>3->children[1] = $4;
+						$$ = $<nodePtr>3;		
 					    }
                   | Additive_Expression TOK_LT {
                   					$<nodePtr>$ =  new_ExprNode(LT_EXP);
                   					$<nodePtr>$->nLinenumber = yylineno;
-	     							$<nodePtr>$->children[0] = $1;	 			
+	     						$<nodePtr>$->children[0] = $1;	 			
                   			       }
                   	Additive_Expression {
                   				$<nodePtr>3->children[1] = $4;
-								$$ = $<nodePtr>3;		
+						$$ = $<nodePtr>3;		
                   			    }
                   | Additive_Expression TOK_GE {
                   					$<nodePtr>$ =  new_ExprNode(GE_EXP);
                   					$<nodePtr>$->nLinenumber = yylineno;
-	     							$<nodePtr>$->children[0] = $1;	 			
+	     						$<nodePtr>$->children[0] = $1;	 			
                   			       } 
                   	Additive_Expression {
-                  					$<nodePtr>3->children[1] = $4;
-									$$ = $<nodePtr>3;	
+                  				$<nodePtr>3->children[1] = $4;
+						$$ = $<nodePtr>3;	
                   			    }
                   	
                   | Additive_Expression TOK_LE {
                   					$<nodePtr>$ =  new_ExprNode(LE_EXP);
                   					$<nodePtr>$->nLinenumber = yylineno;
-	     							$<nodePtr>$->children[0] = $1;	 			
+	     						$<nodePtr>$->children[0] = $1;	 			
                   			       } 	 
                   	Additive_Expression {
                   				$<nodePtr>3->children[1] = $4;
-								$$ = $<nodePtr>3;	
+						$$ = $<nodePtr>3;	
                   			    }
                   	
                   | Additive_Expression TOK_EQ {
                   					$<nodePtr>$ =  new_ExprNode(EQ_EXP);
                   					$<nodePtr>$->nLinenumber = yylineno;
-	     							$<nodePtr>$->children[0] = $1;	 			
+	     						$<nodePtr>$->children[0] = $1;	 			
                   			       }
                   	Additive_Expression {
                   				$<nodePtr>3->children[1] = $4;
-								$$ = $<nodePtr>3;	
+						$$ = $<nodePtr>3;	
                   			    }
                   	
                   | Additive_Expression TOK_NE {	
                   					$<nodePtr>$ =  new_ExprNode(NE_EXP);
                   					$<nodePtr>$->nLinenumber = yylineno;
-	     							$<nodePtr>$->children[0] = $1;	 			
+	     						$<nodePtr>$->children[0] = $1;	 			
                   			       } 	  
                   	 Additive_Expression {
                   	 			$<nodePtr>3->children[1] = $4;
-								$$ = $<nodePtr>3;	
+						$$ = $<nodePtr>3;	
                   	   		     }
 		  | Additive_Expression { $$ = $1; }
 ;
@@ -509,14 +499,12 @@ Call : TOK_ID TOK_LPAREN Args TOK_RPAREN {
 						$$= new_ExprNode(CALL_EXP);
 						$$->nLinenumber = yylineno;
 						$$->nSymbolPtr = symLookup($1);
-
 					 	if(!$$->nSymbolPtr)
  					 	{  	
 						  printf("function %s not found, forward reference\n", $1);
 						  $$->fname = strdup($1);
  					 	}
- 					 	$$->fname = strdup($1);
-					 	$$->children[0] = $3;	
+					 	$$->children[0] = $3;			  	    					 
 					 }
 ;
 
@@ -556,12 +544,9 @@ int main(int argc, char **argv){
 #else
     initSymbolTable(); 	
     yyparse();
-    if (typecheck(program)) {
-    	printf("[TYPECHECK] Passed\n");
-    } else {
-    	printf("[TYPECHECK] Failed\n");
-    }
-
+    typecheck();
+    codegen();
+    
 #endif
     
 } 
