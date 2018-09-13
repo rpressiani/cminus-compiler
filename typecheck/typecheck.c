@@ -1,7 +1,5 @@
 
 #include "typecheck.h"
-#include "symbolTable.h"
-#include "ast.h"
 
 extern AstNode *program;
 
